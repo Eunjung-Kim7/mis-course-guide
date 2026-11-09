@@ -1,0 +1,1055 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>MIS 위험–통제 워크시트</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 상단 진도율 바 → 오늘의 질문·흐름 → 팀 선택 → 단계 탭(①~⑦) → 단계마다 [핵심 개념 → 틀 · 예시 · 우리 팀] → 교수 현황 */
+:root {
+  --navy: #1b2a4a; --gold: #b98a3d; --bg: #f5f6f9; --card: #ffffff; --fg: #1d2433; --muted: #5d6679; --line: #dde1ea;
+  --tint: #f1ebdf; --mark: #f3e3c4; --ok: #2f7a55; --warn: #a3621b; --bad: #b2453b; --mon: #2f7a55; --tue: #6b4fa0;
+  --lo: #dcefe4; --mid: #f6e6c6; --hi: #f3d3cf;
+  --head: #1b2a4a; --head-fg: #ffffff; --onnavy: #ffffff;
+  --f-display: "IBM Plex Sans KR", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --f-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11161f; --card: #19202c; --fg: #e6e9f0; --muted: #9aa3b5; --line: #2b3444; --tint: #2a241a; --mark: #4a3b20;
+  --ok: #6cc394; --warn: #e0a659; --bad: #ec8a80; --mon: #6cc394; --tue: #b9a2e6; --lo: #1f3a2c; --mid: #463920; --hi: #4a2622;
+  --head: #0d1526; --head-fg: #f2f4f8; --gold: #d2a65a; --navy: #2c4170; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #11161f; --card: #19202c; --fg: #e6e9f0; --muted: #9aa3b5; --line: #2b3444; --tint: #2a241a; --mark: #4a3b20;
+  --ok: #6cc394; --warn: #e0a659; --bad: #ec8a80; --mon: #6cc394; --tue: #b9a2e6; --lo: #1f3a2c; --mid: #463920; --hi: #4a2622;
+  --head: #0d1526; --head-fg: #f2f4f8; --gold: #d2a65a; --navy: #2c4170; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 16px; line-height: 1.75; word-break: keep-all; overflow-wrap: anywhere; margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--head); }
+.wrap { max-width: 980px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header.top { background: var(--head); color: var(--head-fg); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; }
+header.top .wrap { padding-block: 12px 10px; display: flex; flex-direction: column; gap: 8px; }
+.trow { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+h1 { font-family: var(--f-display); font-weight: 700; font-size: 1.15rem; margin: 0; text-wrap: balance; }
+.draft { font-size: 12px; border: 1px solid var(--gold); color: var(--gold); border-radius: 999px; padding: 0 8px; }
+.sync { font-size: 12px; opacity: .85; margin-left: auto; }
+.bar { height: 8px; background: rgba(255,255,255,.18); border-radius: 4px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--gold); transition: width .3s; }
+.barlab { font-size: 12px; opacity: .9; font-variant-numeric: tabular-nums; }
+main.wrap { padding-block: 20px 48px; display: flex; flex-direction: column; gap: 20px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 22px 24px; min-width: 0; }
+h2 { font-family: var(--f-display); font-size: 1.25rem; font-weight: 700; margin: 4px 0 8px; line-height: 1.4; text-wrap: balance; }
+.sub { color: var(--muted); font-size: 14px; margin: 0; max-width: 72ch; }
+.eyebrow { font-size: 12px; letter-spacing: .04em; color: var(--gold); font-weight: 700; }
+button:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.why { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 12px; }
+.why > div { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.why b { font-size: 14px; } .why span { font-size: 13px; color: var(--muted); line-height: 1.65; }
+.mini { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.mini li { font-size: 13px; padding: 5px 12px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); color: var(--muted); }
+.mini li.past { color: var(--fg); } .mini li.now { background: var(--navy); color: var(--onnavy); border-color: var(--navy); font-weight: 700; }
+.mini li:not(:last-child)::after { content: "›"; margin-left: 8px; color: var(--gold); }
+.teams { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; margin-top: 10px; }
+.teams button { font: inherit; text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
+.teams button[aria-pressed="true"] { border-color: var(--navy); box-shadow: inset 0 0 0 2px var(--gold); }
+.teams b { font-size: 14px; } .teams small { color: var(--muted); font-size: 12px; line-height: 1.4; }
+.edtag { display: block; font-size: 12.5px; color: var(--warn); margin-top: 4px; }
+.conflict { margin-top: 6px; padding: 10px 12px; border: 1px solid var(--warn); border-radius: 6px; background: var(--tint); font-size: 13.5px; }
+.conflict .theirs { margin: 6px 0; padding: 6px 8px; background: var(--card); border-radius: 4px; white-space: pre-wrap; }
+.notice { font-size: 15px; padding: 10px 14px; border-left: 3px solid var(--warn); background: var(--tint); border-radius: 4px; margin: 10px 0 0; line-height: 1.75; }
+.doorbox { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; } .doorbox .drow { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 13.5px; } .doorbox .chip { font: inherit; font-size: 13px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--muted); cursor: pointer; } .doorbox .chip[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+.handover { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.handover .lab { font-size: 12px; font-weight: 700; color: var(--muted); }
+.handover .tx { font-size: 15px; }
+.handover .tx.none { color: var(--warn); }
+nav.steps { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+nav.steps button { font: inherit; font-size: 13px; white-space: nowrap; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--muted); cursor: pointer; display: flex; gap: 6px; align-items: center; }
+nav.steps button[aria-selected="true"] { background: var(--navy); color: var(--onnavy); border-color: var(--navy); }
+nav.steps .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); } nav.steps .dot.done { background: var(--gold); }
+.daytag.tue, nav.steps .tm.tue { color: var(--tue); }
+.case { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; } .case b { font-size: 13px; } .case span { color: var(--muted); font-size: 13px; }
+nav.steps .tm { font-size: 11px; font-weight: 700; color: var(--mon); font-variant-numeric: tabular-nums; }
+nav.steps button[aria-selected="true"] .tm { color: var(--onnavy); opacity: .85; }
+.stagehead { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; }
+.daytag { font-size: 12px; font-weight: 700; border-radius: 999px; padding: 1px 10px; border: 1px solid currentColor; color: var(--mon); font-variant-numeric: tabular-nums; }
+.concept { display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; padding: 14px 16px; background: var(--tint); border-left: 4px solid var(--gold); border-radius: 8px; margin: 10px 0 0; font-size: 15px; line-height: 1.8; }
+.concept b { color: var(--gold); white-space: nowrap; font-size: 14px; }
+@media (max-width: 640px) { .concept { grid-template-columns: 1fr; gap: 2px; } }
+.item { border-top: 1px solid var(--line); padding-top: 16px; margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+.where { font-size: 15px; font-weight: 700; }
+.lead { font-size: 14px; color: var(--muted); margin: 0; }
+.row { display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: start; }
+.row > .tagc { font-size: 12px; font-weight: 700; color: var(--muted); padding-top: 3px; }
+.pat { margin: 0; font-size: 15px; line-height: 1.85; }
+.pat mark { background: var(--mark); color: var(--fg); padding: 1px 4px; border-radius: 3px; }
+.ex { margin: 0; font-size: 15px; line-height: 1.75; padding: 8px 12px; border-left: 3px solid var(--ok); background: var(--bg); border-radius: 4px; }
+@media (max-width: 640px) { .row { grid-template-columns: 1fr; gap: 4px; } }
+textarea, input[type=text], select { width: 100%; font: inherit; font-size: 15px; line-height: 1.6; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--card); color: var(--fg); }
+textarea { resize: vertical; min-height: 66px; }
+.tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+.btn { font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; }
+.btn.primary { background: var(--navy); color: var(--onnavy); border-color: var(--navy); }
+.btn:disabled { opacity: .6; cursor: default; }
+.who { font-size: 12px; color: var(--muted); margin-left: auto; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.clab { font-size: 12px; color: var(--muted); margin-right: 2px; }
+.mk { font: inherit; font-size: 13px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; white-space: nowrap; }
+.mk[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: var(--onnavy); }
+.mk[aria-pressed="true"].ok { background: var(--ok); border-color: var(--ok); color: #fff; }
+.mk[aria-pressed="true"].mid { background: var(--warn); border-color: var(--warn); color: #fff; }
+.mk[aria-pressed="true"].no { background: var(--bad); border-color: var(--bad); color: #fff; }
+.tw { overflow-x: auto; }
+table.g { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; }
+table.g th, table.g td { text-align: left; vertical-align: top; padding: 8px; border-bottom: 1px solid var(--line); }
+table.g thead th { font-size: 12px; color: var(--muted); font-weight: 700; border-bottom: 2px solid var(--line); }
+table.g tr.exr td { color: var(--muted); font-size: 13px; background: var(--bg); }
+table.g textarea, table.g input { font-size: 14px; }
+.quiz { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.quiz .q { font-size: 15px; }
+.fb { font-size: 14px; margin: 0; }
+.fb.ok { color: var(--ok); } .fb.no { color: var(--warn); }
+.matrix { display: grid; grid-template-columns: 64px repeat(3, minmax(0, 1fr)); gap: 4px; max-width: 420px; font-size: 12px; }
+.matrix .ax { color: var(--muted); display: flex; align-items: center; justify-content: center; text-align: center; }
+.matrix .cell { border-radius: 6px; padding: 10px 4px; text-align: center; color: var(--fg); border: 2px solid transparent; }
+.matrix .cell.lo { background: var(--lo); } .matrix .cell.mid { background: var(--mid); } .matrix .cell.hi { background: var(--hi); }
+.matrix .cell.on { border-color: var(--navy); font-weight: 700; }
+.matrix .cell.was { border-style: dashed; border-color: var(--muted); }
+.level { font-size: 15px; font-weight: 700; }
+.level .lv { display: inline-block; padding: 1px 10px; border-radius: 999px; margin-left: 4px; }
+.lv.lo { background: var(--lo); } .lv.mid { background: var(--mid); } .lv.hi { background: var(--hi); } .lv.na { background: var(--bg); color: var(--muted); }
+.grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.grid4 > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.grid4 label, .fl { font-size: 13px; font-weight: 700; }
+.grid4 .hint { font-size: 12px; color: var(--muted); }
+.out { white-space: pre-wrap; font-size: 13px; line-height: 1.7; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+.incoming { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.incoming .from { font-size: 12px; font-weight: 700; color: var(--gold); }
+.peer { font-size: 14px; border: 1px dashed var(--line); border-radius: 8px; padding: 10px 12px; background: var(--bg); }
+.peer dt { font-size: 12px; color: var(--muted); font-weight: 700; } .peer dd { margin: 0 0 6px; }
+details.stuck > summary { cursor: pointer; font-size: 14px; color: var(--warn); font-weight: 600; }
+details.stuck ul { margin: 6px 0 0; padding-left: 1.3rem; font-size: 14px; line-height: 1.8; }
+.gate { font-size: 13px; color: var(--muted); } .gate.ok { color: var(--ok); }
+.warnline { font-size: 12px; color: var(--warn); }
+label.chk { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; cursor: pointer; }
+.ov { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 640px; }
+.ov th, .ov td { text-align: left; padding: 8px 10px; border-top: 1px solid var(--line); vertical-align: top; }
+.ov th { font-size: 12px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+.ov td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ov .ok { color: var(--ok); font-weight: 600; } .ov .no { color: var(--muted); }
+.empty { color: var(--muted); font-size: 14px; padding: 24px 0; text-align: center; }
+@media (max-width: 640px) { header.top .wrap { padding-block: 8px 6px; gap: 4px; } h1 { font-size: 1rem; } .card { padding: 18px 16px; } }
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-top: 12px; counter-reset: fl; }
+.flow > div { position: relative; border: 1px solid var(--line); border-top: 4px solid var(--navy); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; background: var(--card); }
+.flow > div.g { border-top-color: var(--gold); }
+.flow b { font-size: 14px; font-family: var(--f-display); } .flow b::before { counter-increment: fl; content: counter(fl) ". "; color: var(--gold); }
+.flow span { font-size: 13px; line-height: 1.6; } .flow i { font-style: normal; font-size: 12.5px; color: var(--muted); line-height: 1.55; border-top: 1px dashed var(--line); padding-top: 4px; }
+.cia3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 10px; }
+.cia3 > div { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.cia3 b { font-size: 14px; } .cia3 span { font-size: 13px; } .cia3 i { font-style: normal; font-size: 12.5px; color: var(--bad); }
+.ph { font-family: var(--f-display); font-size: 1.02rem; margin: 18px 0 2px; }
+table.cat { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 760px; }
+table.cat th, table.cat td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--line); line-height: 1.6; }
+table.cat thead th { font-size: 12.5px; font-weight: 700; color: var(--ink, inherit); background: var(--bg); border-bottom: 2px solid var(--line); white-space: nowrap; }
+table.cat { table-layout: fixed; }
+.ktlg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 4px 0 10px; }
+.ktlg > div { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+@media (max-width: 560px) { .ktlg { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+table.cat td.k { white-space: nowrap; } table.cat td.no { color: var(--warn); }
+table.cat tr.grp td { background: var(--bg); font-weight: 700; font-size: 12.5px; color: var(--gold); }
+.kt { display: inline-block; white-space: nowrap; flex-shrink: 0; font-size: 11.5px; font-weight: 700; padding: 0 7px; border-radius: 999px; margin: 1px 2px 1px 0; border: 1px solid currentColor; }
+.kt.p { color: var(--ok); } .kt.d { color: var(--navy); } .kt.r { color: var(--warn); } .kt.c { color: #6b4fa0; }
+:root[data-theme="dark"] .kt.d { color: #9db4e6; } @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kt.d { color: #9db4e6; } }
+:root[data-theme="dark"] .kt.c { color: #b9a3e3; } @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kt.c { color: #b9a3e3; } }
+details.cat > summary { cursor: pointer; font-size: 14px; font-weight: 700; color: var(--navy); }
+:root[data-theme="dark"] details.cat > summary { color: var(--gold); } @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) details.cat > summary { color: var(--gold); } }
+details.cat[open] > summary { margin-bottom: 8px; }
+.qz { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.qz details { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font-size: 14px; } .qz summary { cursor: pointer; font-weight: 600; } .qz p { margin: 6px 0 0; color: var(--muted); }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="trow"><h1>경영정보학개론 · 정보 보호 — 위험–통제 팀 워크시트</h1><a href="#ovcard" class="ovlink" style="font-size:12px;color:inherit;opacity:.9;margin-left:auto;text-decoration:underline">전체 팀 현황 보기</a><span class="sync" id="sync" style="margin-left:12px">연결 중…</span></div>
+    <div class="bar" aria-hidden="true"><i id="barfill"></i></div>
+    <div class="barlab" id="barlab">팀을 고르면 진행률이 보입니다</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <span class="eyebrow">오늘의 질문</span>
+    <h2>우리 서비스에서 가장 먼저 지켜야 할 정보는 무엇이고, 지난주에 적은 대책으로 정말 지켜지는가?</h2>
+    <div class="why">
+      <div><b>지난주 대책을 다시 씁니다</b><span>지난번 '책임 있는 정보시스템'에서 적은 기술대책이 오늘의 출발점입니다. 새 주제를 고르지 않습니다.</span></div>
+      <div><b>위험 한 건을 끝까지</b><span>여러 개를 얕게 적지 않고, 한 건을 자산 → 위협 → 위험 수준 → 통제 → 남는 위험까지 이어 봅니다.</span></div>
+      <div><b>최종보고서 Ⅶ장으로 갑니다</b><span>오늘 결과의 마지막 칸이 최종보고서 Ⅶ장 「위험·윤리 요소(제언)」 초안이 됩니다.</span></div>
+    </div>
+    <ol class="mini" aria-label="프로젝트 흐름">
+      <li class="past">문제 정의</li><li class="past">정보시스템 설계</li><li class="past">책임 있는 정보시스템</li><li class="now">정보 보호 (오늘)</li><li>최종보고서 Ⅶ장</li>
+    </ol>
+  </section>
+
+
+  <section class="card" id="primer">
+    <span class="eyebrow">개념 먼저 · 처음이면 여기부터</span>
+    <h2>정보 보호를 한 장으로: 무엇을, 무엇으로부터, 어떻게 지키나</h2>
+    <p class="sub">아래 여섯 칸이 오늘 워크시트의 순서 그대로입니다. 예시는 모두 같은 가상 서비스 「스터디룸 예약 앱」입니다. 이 흐름을 머리에 넣고 단계로 들어가세요.</p>
+    <div class="flow">
+      <div><b>정보자산</b><span>서비스가 가지고 있어서, 잃거나 새면 피해가 생기는 정보</span><i>예약자 이름·전화번호, 예약 기록</i></div>
+      <div><b>위협</b><span>피해를 일으킬 수 있는 사건이나 원인 (누가·무엇이)</span><i>퇴사한 조교가 옛 계정으로 접속한다</i></div>
+      <div><b>취약점</b><span>위협이 들어올 수 있게 만드는 우리 쪽 빈틈</span><i>퇴사자 계정을 지우는 절차가 없다</i></div>
+      <div><b>위험</b><span>위협이 빈틈을 타고 자산에 피해를 낼 가능성 × 그때의 영향</span><i>가능성 중간 × 영향 큼 → 위험 높음</i></div>
+      <div class="g"><b>통제(대책)</b><span>위험을 낮추는 장치. 일어나지 않게·알아채게·줄이게·되돌리게</span><i>퇴사 당일 계정 삭제 + 대량 조회 알림</i></div>
+      <div class="g"><b>잔여 위험</b><span>대책을 해도 남는 위험. "없음"은 답이 아니다</span><i>권한 있는 현직 관리자의 사적 이용</i></div>
+    </div>
+    <h3 class="ph">정보 보호가 지키려는 세 가지 — 기밀성 · 무결성 · 가용성</h3>
+    <p class="sub">정보가 "안전하다"는 말은 아래 세 가지가 모두 지켜진다는 뜻입니다. 영어 단어 Confidentiality(기밀성) · Integrity(무결성) · Availability(가용성)의 머리글자를 따서 줄여 <b>CIA</b>라고 부릅니다. 미국 정보기관 이름과는 상관없습니다. 사고가 나면 "셋 중 무엇이 깨졌나"를 먼저 묻습니다.</p>
+    <div class="cia3">
+      <div><b>기밀성 (C)</b><span>볼 사람만 본다</span><i>깨지면: 전화번호 목록이 밖으로 샌다 (유출)</i></div>
+      <div><b>무결성 (I)</b><span>정보가 허락 없이 바뀌지 않는다</span><i>깨지면: 누군가 예약 시간을 몰래 바꾼다 (변조)</i></div>
+      <div><b>가용성 (A)</b><span>필요할 때 쓸 수 있다</span><i>깨지면: 시험 기간에 예약 서버가 멈춘다 (중단)</i></div>
+    </div>
+    <h3 class="ph">위협은 어디서 오나 — 세 갈래로 찾으면 빠뜨리지 않습니다</h3>
+    <div class="cia3">
+      <div><b>사람의 실수</b><span>단체 문자에 전체 명단 첨부, 공용 PC 로그아웃 안 함</span></div>
+      <div><b>나쁜 의도</b><span>외부 해커의 비밀번호 대입, 내부 직원의 몰래 조회·판매</span></div>
+      <div><b>시스템·환경</b><span>서버 장애, 업데이트 오류, 정전, 클라우드 장애</span></div>
+    </div>
+    <h3 class="ph">어떤 대책이 있나 — 대책 메뉴판</h3>
+    <p class="sub">대책은 하는 일에 따라 네 종류입니다.</p>
+    <div class="ktlg"><div><span class="kt p">예방</span>일어나지 않게</div><div><span class="kt d">탐지</span>일어나면 알아채게</div><div><span class="kt r">대응</span>피해를 줄이게</div><div><span class="kt c">복구</span>원래대로 돌리게</div></div>
+    <p class="sub">표의 「못 막는 것」 칸을 보면 <b>어떤 대책도 혼자서는 다 막지 못합니다.</b> 그래서 종류가 다른 대책을 2개 이상 함께 씁니다.</p>
+    <div id="primerCat"></div>
+    <h3 class="ph">확인 문제 — 눌러서 답 보기</h3>
+    <div class="qz">
+      <details><summary>Q1. "관리자 비밀번호가 1234다"는 위협·취약점·위험 중 무엇인가?</summary><p>취약점입니다. 우리 쪽 빈틈이기 때문입니다(위 여섯 칸 중 3번 「취약점」). "해커가 비밀번호를 대입해 본다"가 위협이고, "그래서 관리자 계정이 뚫려 고객 연락처가 샐 가능성이 높고 피해가 크다"가 위험입니다.</p></details>
+      <details><summary>Q2. 매일 밤 백업을 한다. 이 대책은 무엇을 지키고, 무엇을 못 막나?</summary><p>복구 대책으로 무결성·가용성을 지킵니다(지워지거나 망가져도 되돌림). 하지만 정보가 밖으로 새는 것(기밀성)은 전혀 막지 못하고, 마지막 백업 이후에 생긴 데이터는 잃습니다.</p></details>
+      <details><summary>Q3. 대책을 모두 "예방"으로만 적었다. 무엇이 문제인가?</summary><p>예방이 실패한 순간을 아무도 모릅니다. 접근 기록이나 이상 조회 알림 같은 탐지, 계정 잠금 같은 대응을 함께 두어야 피해가 커지기 전에 멈출 수 있습니다.</p></details>
+    </div>
+  </section>
+  <section class="card">
+    <span class="eyebrow">시작하기</span>
+    <h2>우리 팀을 누르세요</h2>
+    <p class="sub">한 사람이 쓴 내용은 같은 팀원 화면에 바로 나타납니다. 각자 자기 기기에서 같은 팀을 누르면 됩니다.</p>
+    <div class="teams" id="teams"></div>
+  </section>
+
+  <section class="card" id="teamcard" hidden>
+    <span class="eyebrow">우리 팀 출발점</span>
+    <h2 id="tname"></h2>
+    <p class="sub" id="ttopic"></p>
+    <div class="handover">
+      <span class="lab" id="ttechlab">지난번 기술대책</span>
+      <span class="tx" id="ttech"></span>
+    </div>
+    <p class="notice" id="tprompt"></p>
+    <div class="doorbox" id="tdoor"></div>
+  </section>
+
+  <nav class="steps" id="steps" role="tablist" aria-label="단계" hidden></nav>
+  <section class="card" id="stage" hidden></section>
+  <p class="empty" id="emptymsg">위에서 우리 팀을 고르세요.</p>
+
+  <section class="card" id="localcard" hidden>
+    <span class="eyebrow">이 기기에만 저장되는 상태</span>
+    <h2>작업파일로 옮기기</h2>
+    <p class="sub">지금 화면은 팀 공유가 안 되는 방식으로 열렸습니다. 한 사람이 대표로 입력하거나, 작업파일을 저장해 팀원에게 넘기고 받은 사람이 불러옵니다. 불러오면 이 기기의 같은 팀 내용이 바뀝니다.</p>
+    <div class="tools"><button class="btn" type="button" id="jsonout">작업파일 저장</button><button class="btn" type="button" id="jsonin">작업파일 불러오기</button><span class="warnline" id="jsonmsg"></span></div>
+    <input type="file" id="jsonfile" accept=".json,application/json" hidden>
+  </section>
+
+  <section class="card" id="ovcard" hidden>
+    <span class="eyebrow">전체 팀 진행 현황</span>
+    <h2>팀별 진행 상태</h2>
+    <p class="sub">모든 팀이 지금 어느 단계까지 왔는지 함께 봅니다. 쓴 내용은 ⑥에서 짝 팀이 읽고 반론을 보내고, 교수님이 수업 중에 직접 확인합니다.</p>
+    <div class="tw"><table class="ov" id="ovtable"></table></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  // ---------------- 팀 (지난번 응답 기록 기준 · 팀원 이름은 넣지 않음) ----------------
+  // 지난번 응답 시트(11/8 기준) + 팀 슬라이드(5팀 11/7 · 잘해보자는 팀 11/6 · 6팀 11/8 작성 중) 대조
+  const TEAMS = [
+    { key: 'teamE', assetList: ["보호자 실시간 위치", "아이 이름·나이", "아이 증상", "병원 방문 기록", "대기 조회 기록", "병원 연동 진료 데이터(EMR)"], riskEx: '병원 접수 직원 계정을 여러 명이 같이 써서, 아무나 그 계정으로 아이 이름·증상 목록을 볼 수 있다 (유출)', label: '아진사랑정원은혜', topic: '기다림ON — 소아과 혼잡 시간대·실시간 대기 안내', tech: '위치 데이터의 가명화 처리 및 즉시 파기 기술 적용, EMR(병원 전자 진료기록) 연동 데이터의 암호화 전송 및 최소 권한 접근 통제', techSrc: '지난번 워크시트', asset: '보호자 실시간 위치 · 대기 조회·방문 기록 · 아이 이름·나이·증상', prompt: '지난번 데이터 표에 "아이 이름·나이·증상"까지 있습니다. 증상과 병원 방문 기록이 함께 쌓이면 건강에 관한 정보가 됩니다. 가명화(이름 대신 번호로 바꿔 누군지 바로 모르게 함)·즉시 파기는 위치만 다룹니다. 증상·방문 기록은 무엇으로 지키나요?' },
+    { key: 'jo4', assetList: ["고객 이름·연락처", "보관 신청 이력", "보드 소유 정보", "보드 케어 기록", "창고 보관 위치 기록", "결제 내역"], riskEx: '창고 직원이 보관 기록을 잘못 고쳐, 다른 고객의 보드를 내주게 된다 (변조)', label: '4팀', topic: '비수기 서핑보드 보관 대행', tech: '고객 연락처와 보드 관리 기록을 분리하고, 직원별 접근 권한을 설정하며, 개인정보 열람 기록을 보관한다.', techSrc: '지난번 워크시트 (11/7 저장)', asset: '고객 이름·연락처·보관 신청 이력 · 보드 소유·케어 기록', prompt: '지난번 대책은 연락처가 새지 않게(기밀성) 하는 데 맞춰져 있습니다. 보관 중인 보드의 케어 기록이 잘못 바뀌거나(무결성) 창고 관리 시스템이 멈추면(가용성) 고객은 어떤 피해를 보나요?' },
+    { key: 'jo6', assetList: ["여행 날짜", "예약 정보(숙소·체험)", "숙소 지역", "방문 예정 장소", "예약 링크 클릭 기록", "외부 업체에 넘기는 정보"], riskEx: '외부 예약업체에 넘긴 고객의 여행 날짜·숙소 지역이 그 업체 쪽에서 새어 나간다 (유출)', label: '킥오프', topic: '코스로 — 여행·데이트 코스 추천과 예약 연결', tech: '예약된 일정의 자동 변경을 차단하고 고객 승인 절차를 둔다. 외부 AI·예약업체에는 필요한 정보만 전달하며, 제휴 추천은 별도 표시한다. 정보 출처·확인 시점과 오류 수정 이력을 기록한다.', techSrc: '지난번 워크시트 (11/7 저장)', asset: '여행 날짜·예약 정보 · 숙소 지역·방문 예정 장소 · 예약 링크 클릭 기록', prompt: '지난번 장면은 "틀린 날씨·교통 정보로 일정 변경을 추천해 고객이 체험을 놓침"이었습니다. 그 정보는 어디서 들어와 어디서 틀어지나요? 또 이름 없이 번호로만 된 회원 정보라도 숙소 지역·방문 장소·날짜가 합쳐지면 누군지 드러나지 않나요?' },
+    { key: 'won', assetList: ["견적서·명세서 원본 사진", "차량번호", "사용자 전화번호", "운전 경력", "정비소 평점·후기", "정비소 수수료 데이터"], riskEx: '정비소 관리 직원이 자기 정비소 평점을 몰래 올려 고친다 (변조)', label: '5팀', topic: '초보운전자 정비소 견적 비교·예약', tech: '견적서·명세서 이미지와 개인정보 저장소를 분리하고, 역할별 최소권한(원본은 담당자만)을 주고, 접근 로그를 보관한다.', techSrc: '지난번 팀 슬라이드 6단계 (11/7)', asset: '견적서·명세서 원본 이미지(이름·차량번호·연락처) · 사용자 전화번호·운전 경력', prompt: '지난번 그리드에서 "정비소 관리 직원이 평점·수수료 데이터를 고칠 수 있다"는 쟁점을 냈습니다. 이건 유출이 아니라 변조(무결성) 위험입니다. 평점이 몰래 바뀌면 누가, 어떻게 알아채나요?' },
+    { key: 'good', assetList: ["구독 기록", "결제 정보", "연락처", "마케팅 수신 동의 기록", "이모티콘 사용 기록"], riskEx: '결제 서버가 멈춰 구독 갱신이 안 되고, 이용자가 이모티콘을 쓰지 못한다 (중단)', label: '잘해보자는 팀', topic: '카카오톡 이모티콘 플러스 (구독 서비스)', tech: '구독·결제 기록, 연락처, 마케팅 수신 동의 기록을 별도 표로 나눠 보관한다. 담당자별 최소 접근 권한을 두고 접근 로그를 남기며, 분석할 때는 회원ID를 가명처리한다', techSrc: '지난번 워크시트 (11/8 저장)', asset: '구독·결제 기록 · 연락처·마케팅 수신 동의 기록', prompt: '접근 로그를 남긴다고 했습니다. 그 로그는 누가, 얼마나 자주 보나요? 아무도 보지 않으면 탐지 통제가 되지 못합니다. 또 번호로 바꿔 둔 회원 정보를 연락처 표와 다시 연결할 수 있는 사람은 누구인가요?' },
+    { key: 'cond', assetList: ["영수증 사진", "진료비 내역", "보호자 이름·연락처", "반려동물 진료 이력", "장례 업체 비교·예약 기록"], riskEx: '보호자가 올린 영수증 사진에 이름·주소·카드 끝자리가 그대로 남아 다른 이용자에게 보인다 (유출)', label: '컨디션난조', topic: '펫트릭스 — 동물병원 진료비·반려동물 장례 비교', tech: '', techSrc: '', asset: '영수증 이미지·진료비 내역 · 보호자 연락처·반려동물 진료 이력', prompt: '지난번에는 데이터 표 2줄까지 썼습니다. 보호자가 올리는 영수증 사진에는 무엇이 찍혀 있나요(병원명·보호자 이름·주소·카드 끝자리)? 그 사진을 지키는 대책 1~2문장부터 씁니다.' },
+    { key: 'teamK', assetList: ["성적증명서(판매자 인증용)", "학점 데이터", "판매 자료(시험자료·족보)", "결제 정보", "구매·대여 기록"], riskEx: '판매자가 성적증명서를 위조해 A+ 인증을 받고 자료를 판다 (변조)', label: '내현태윤현수정희', topic: '대학생 시험자료·교재 대여·강좌 구독', tech: '', techSrc: '', asset: '성적증명서(판매자 인증용) · 학점 데이터 · 결제 정보', prompt: '지난번 장면은 "판매자가 성적증명서로 A+ 인증을 받고 족보를 판다"였습니다. 인증이 끝난 증명서를 계속 보관해야 하나요? 증명서가 위조되면(무결성) 누가 피해를 보나요? 대책 1~2문장부터 씁니다.' },
+    { key: 't6', assetList: ["수거·전달 위치", "희망 시간", "구매 요청 내역", "결제 내역", "배송 담당자 배정 기록"], riskEx: '배송 담당자가 수거 위치·시간 기록을 보고 고객 집이 비는 시간을 알 수 있다 (유출)', label: '6팀', topic: '대학가 자취생 생활 서비스 (세탁물 수거·장보기 대행·합배송)', tech: '', techSrc: '', asset: '수거·전달 위치와 희망 시간 · 구매 요청·결제 내역', prompt: '팀 슬라이드에 "고객 요청을 누구에게 먼저 배정할까(배차 성공률)"를 적기 시작했습니다. 배정하려면 수거 위치와 시간이 필요합니다. 그 둘이 쌓이면 "언제 집이 비는지"가 보입니다. 배송 담당자는 어디까지 봐야 하나요? 대책 1~2문장부터 씁니다.' },
+  ];
+  const CIA = [['C', '기밀성(C)'], ['I', '무결성(I)'], ['A', '가용성(A)']];
+  const LV = ['낮음', '중간', '높음'];
+  const QUIZ = [
+    { q: '아르바이트 직원이 고객 연락처 목록을 개인 메신저로 친구에게 보냈다.', a: 'C', why: '볼 권한이 없는 사람에게 정보가 넘어갔으므로 기밀성(C)이 깨졌습니다.' },
+    { q: '결제 서버가 오류로 3시간 동안 멈춰 예약을 받을 수 없었다.', a: 'A', why: '정보와 시스템을 필요할 때 쓸 수 없었으므로 가용성(A)이 깨졌습니다.' },
+    { q: '누군가 관리자 화면에서 견적 금액을 몰래 바꿔 저장했다.', a: 'I', why: '정보가 허락 없이 바뀌어 믿을 수 없게 됐으므로 무결성(I)이 깨졌습니다.' },
+  ];
+  const TR = { q: '다음 중 "위험"을 쓴 문장은?', opts: [['t', '해커가 관리자 계정에 흔한 비밀번호를 대입해 본다.'], ['r', '관리자 비밀번호가 쉬우면 계정이 탈취되어 고객 2천 명의 연락처가 유출될 가능성이 중간이고, 피해는 크다.']], a: 'r', why: '첫 문장은 사고를 일으키는 사건, 곧 위협입니다. 위험은 그 위협이 우리 자산에 실제 피해를 낼 가능성과 영향까지 말한 것입니다.' };
+  const STEPS = [
+    { name: '① 지난주 대책 다시 보기', time: '13:00' },
+    { name: '② 개념 확인', time: '13:10' },
+    { name: '③ 각자 위험 후보', time: '13:32' },
+    { name: '④ 핵심 위험 1건', time: '14:00' },
+    { name: '⑤ 통제와 남는 위험', time: '14:15' },
+    { name: '⑥ 다른 팀 반론', time: '14:27' },
+    { name: '⑦ 제언 초안 · 중간 저장', time: '14:40' },
+    { name: '⑧ 기말 주제 · 목차 정하기', time: '' },
+    { name: '⑨ AI 검토 판정', time: '12:00', day: 'tue' },
+    { name: '⑩ 복구·남는 위험 처리 · 제출', time: '12:15', day: 'tue' },
+  ];
+  // 짝 팀(⑥): 운영안 v3.1의 예시 배정. 교수님이 바꾸면 이 표만 고치면 됩니다.
+  // 서비스가 비슷한 팀끼리: 진료(아이·반려동물) / 예약·비교(여행·정비소) / 구독·결제(이모티콘·시험자료) / 보관·배송(서핑보드·자취생)
+  const PAIR = { teamE: 'cond', cond: 'teamE', jo6: 'won', won: 'jo6', good: 'teamK', teamK: 'good', jo4: 't6', t6: 'jo4' };
+
+  const $ = (id) => document.getElementById(id);
+  // ---------------- 팀 공유: claude.ai 밖(GitHub 등)에서는 구글 시트 서버로 ----------------
+  function sheetDB(PFX) {
+    const URL_ = 'https://script.google.com/macros/s/AKfycbxtSZUz1V81-N0-DUjKk-FQL-R1aNBBAmVTucZLfWcVSUcVA4nfDKG91nat5GczAZki/exec', KEY_ = 'capec-2026-2';
+    const T = {};
+    const parse = (v) => { if (v && typeof v === 'object') return v; if (typeof v === 'string') { try { const o = JSON.parse(v); if (o && typeof o === 'object' && 'v' in o) return o; } catch (e) {} return { v, by: '', at: 0 }; } return { v: '', by: '', at: 0 }; };
+    const st = (team) => T[team] || (T[team] = { data: {}, seq: 0, cbs: new Set(), timer: null, busy: false, ms: 0 });
+    function emit(s) { const docs = Object.keys(s.data).map((id) => ({ id, data: () => s.data[id] })); s.cbs.forEach((o) => { try { o.cb({ docs }); } catch (e) {} }); }
+    function pull(team) {
+      const s = st(team); if (s.busy) return; s.busy = true;
+      fetch(`${URL_}?key=${encodeURIComponent(KEY_)}&op=pull&team=${encodeURIComponent(PFX + team)}&since=${s.seq}&t=${Date.now()}`)
+        .then((r) => r.json()).then((j) => {
+          s.busy = false; if (!j || !j.ok) throw new Error('pull');
+          const f = j.f || {}; let ch = s.seq === 0; Object.keys(f).forEach((k) => { if (k.charAt(0) === '_') return; s.data[k] = parse(f[k]); ch = true; });
+          s.seq = Math.max(s.seq, +j.seq || 0); if (ch) emit(s);
+        }).catch(() => { s.busy = false; s.cbs.forEach((o) => { if (o.err) try { o.err(); } catch (e) {} }); });
+    }
+    function loop(team) { const s = st(team); clearTimeout(s.timer); if (!s.cbs.size) return; pull(team); s.timer = setTimeout(() => loop(team), document.hidden ? 15000 : s.ms); }
+    return {
+      sheet: true,
+      doc(path) {
+        const p = path.split('/'); const team = p[1], k = p.slice(3).join('/');
+        return { set(obj) {
+          const s = st(team); s.data[k] = obj;
+          return fetch(URL_, { method: 'POST', body: JSON.stringify({ key: KEY_, team: PFX + team, items: [{ k, v: obj }] }) })
+            .then((r) => r.json()).then((j) => { if (!j || !j.ok) throw new Error('save'); setTimeout(() => pull(team), 400); });
+        } };
+      },
+      collection(path) {
+        const team = path.split('/')[1];
+        return { onSnapshot(cb, err, ms) {
+          const s = st(team); const o = { cb, err }; s.cbs.add(o); const want = ms || 4000; s.ms = s.ms ? Math.min(s.ms, want) : want;
+          if (s.seq > 0) setTimeout(() => cb({ docs: Object.keys(s.data).map((id) => ({ id, data: () => s.data[id] })) }), 0);
+          loop(team); return () => { s.cbs.delete(o); if (!s.cbs.size) clearTimeout(s.timer); };
+        } };
+      },
+    };
+  }
+  function localId() { try { let v = localStorage.getItem('ws-uid'); if (!v) { v = 'u' + Math.random().toString(36).slice(2, 10); localStorage.setItem('ws-uid', v); } return v; } catch (e) { return 'u' + Math.random().toString(36).slice(2, 10); } }
+  function pdfOut(pdf, fname, msg, doneText) {
+    const blob = pdf.output('blob'); const url = URL.createObjectURL(blob);
+    try { const a = document.createElement('a'); a.href = url; a.download = fname; document.body.append(a); a.click(); a.remove(); } catch (e) {}
+    msg.textContent = doneText + ' 태블릿에서 내려받기가 안 되면 → ';
+    const ob = document.createElement('button'); ob.type = 'button'; ob.className = 'btn'; ob.textContent = 'PDF 새 창에서 열기 (공유 → 파일에 저장)'; ob.onclick = () => { const w = window.open(url, '_blank'); if (!w) location.href = url; }; msg.append(ob);
+    setTimeout(() => URL.revokeObjectURL(url), 10 * 60 * 1000);
+  }
+
+  // ---------------- 대책 메뉴판 ----------------
+  const KT = { 예방: 'p', 탐지: 'd', 대응: 'r', 복구: 'c' };
+  const CTRLS = [
+    ['사람·규칙으로 하는 대책'],
+    ['최소 권한 (역할별 접근권한)', ['예방'], 'C·I', '정비소 직원은 예약 정보만, 견적서 원본은 담당자만 본다', '권한을 가진 사람이 일부러 빼돌리는 것'],
+    ['퇴사·이동자 계정 즉시 정리', ['예방'], 'C', '퇴사 당일 체크리스트로 계정 삭제', '삭제를 깜빡한 계정 — 그래서 정기 점검(탐지)이 필요'],
+    ['개인정보 최소 수집 · 보관 기간 후 파기', ['예방'], 'C', '생년월일은 받지 않는다 · 예약 끝나고 6개월 뒤 삭제', '보관 기간 안에 일어나는 유출'],
+    ['중요 변경은 두 사람 승인', ['예방'], 'I', '가격·정산 금액 수정은 담당자+팀장 승인', '승인자 둘 다 확인 없이 누르는 것'],
+    ['보안 교육 · 피싱 훈련', ['예방'], 'C·I·A', '학기 초 10분 교육, 가짜 피싱 문자 테스트', '교육을 들어도 생기는 실수'],
+    ['사고 대응 절차 (연락망·순서)', ['대응'], 'C·I·A', '유출 의심 시: 계정 잠금 → 책임자 보고 → 고객 안내', '이미 빠져나간 정보를 되돌리지는 못함'],
+    ['기술로 하는 대책'],
+    ['2단계 인증 · 강한 비밀번호', ['예방'], 'C·I', '관리자 로그인 때 문자 인증번호 추가', '피싱으로 인증번호까지 넘겨준 경우, 로그인된 기기를 잃어버린 경우'],
+    ['암호화 (저장·전송)', ['예방'], 'C', '전화번호를 암호화해 저장, 주고받을 때도 암호화 (주소창 자물쇠 표시)', '정상 권한으로 연 화면을 캡처·복사하는 것'],
+    ['가리기 (마스킹)', ['예방'], 'C', '010-****-1234, 견적서 사진의 차량번호 가림', '가리기 전 원본이 다른 곳(메신저 등)에 남은 경우'],
+    ['입력값 검사', ['예방'], 'I', '예약 인원 0명·음수 금액은 저장 안 됨', '형식은 맞지만 내용이 틀린 입력'],
+    ['접근 기록(로그) 남기기', ['탐지'], 'C·I', '누가 언제 어떤 고객 정보를 열었는지 기록', '기록만 쌓고 아무도 보지 않으면 소용없음 · 실시간으로 막지는 못함'],
+    ['이상 행동 알림', ['탐지', '대응'], 'C·A', '한 번에 100건 넘게 조회하면 관리자에게 알림 + 자동 잠금', '조금씩 나눠서 빼 가는 경우'],
+    ['백업 (다른 곳에 정기 저장)', ['복구'], 'I·A', '매일 밤 예약 기록을 다른 저장소에 복사', '정보 유출(C)은 못 막음 · 마지막 백업 이후 데이터는 잃음'],
+    ['예비 서버 · 장애 대비', ['예방', '복구'], 'A', '주 서버가 멈추면 예비 서버로 자동 전환', '비용 부담 · 두 곳이 함께 멈추는 큰 장애'],
+    ['기기·장소로 하는 대책'],
+    ['기기 잠금 · 분실 시 원격 삭제', ['예방', '대응'], 'C', '매장 태블릿 자동 잠금, 잃어버리면 원격 초기화', '잠기기 전 잠깐 사이에 본 것'],
+    ['서류·화면 노출 관리', ['예방'], 'C', '고객 명단 출력 금지, 카운터 화면은 손님 쪽으로 돌리지 않기', '사진 촬영 등 의도적 유출'],
+  ];
+  function ctrlTable() {
+    const tw = el('div', 'tw'); const t = el('table', 'cat');
+    t.innerHTML = '<thead><tr><th>대책</th><th>종류</th><th>지키는 것 (C·I·A)</th><th>이렇게 쓴다 (예시)</th><th>못 막는 것</th></tr></thead>';
+    t.insertAdjacentHTML('afterbegin', '<colgroup><col style="width:20%"><col style="width:10%"><col style="width:11%"><col style="width:30%"><col style="width:29%"></colgroup>');
+    const b = el('tbody');
+    CTRLS.forEach((r) => {
+      const tr = el('tr');
+      if (r.length === 1) { tr.className = 'grp'; const td = el('td', null, r[0]); td.colSpan = 5; tr.append(td); b.append(tr); return; }
+      const k = el('td'); r[1].forEach((x) => k.append(el('span', 'kt ' + KT[x], x)));
+      tr.append(el('td', null, r[0]), k, el('td', 'k', r[2]), el('td', null, r[3]), el('td', 'no', r[4])); b.append(tr);
+    });
+    t.append(b); tw.append(t); return tw;
+  }
+  function ctrlMenu(lead, open) {
+    const d = el('details', 'cat'); if (open) d.open = true; d.append(el('summary', null, '대책 메뉴판 펼치기 — 어떤 대책이 있고, 각각 무엇을 못 막나'));
+    if (lead) d.append(el('p', 'lead', lead)); d.append(ctrlTable()); return d;
+  }
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const patNodes = (s) => String(s || '').split(/(\[[^\]]+\])/).map((p) => /^\[[^\]]+\]$/.test(p) ? el('mark', null, p.slice(1, -1)) : document.createTextNode(p));
+
+  // ---------------- 저장: 팀 공유(db) · 없으면 이 기기 ----------------
+  let team = null, db = null, me = null, unsub = null, partnerUnsub = null, local = false, step = 0, dl = null;
+  const vals = {}, pending = {}, unsent = new Set(), partnerVals = {};
+  let cur = vals;
+  const get = (k) => (cur[k] && cur[k].v) || '';
+  const lsKey = (tk, k) => `mis8-${tk}-${k}`;
+  const setSync = (t) => { $('sync').textContent = t; };
+  function writeDoc(teamKey, k, v) {
+    if (local || !db) { try { localStorage.setItem(lsKey(teamKey, k), v); } catch (e) {} return Promise.resolve(); }
+    return db.doc(`mis8/${teamKey}/f/${k}`).set({ v, by: me || '', at: Date.now() });
+  }
+  const OBK = 'mis8-outbox';
+  const WRITE = (tk, k, v) => writeDoc(tk, k, v);
+  // 저장 대기열: 입력 순간의 팀·값을 붙잡아 두고, 서버가 받을 때까지 이 기기에 보관
+  let retryT = null;
+  function obRead() { try { return JSON.parse(localStorage.getItem(OBK) || '{}'); } catch (e) { return {}; } }
+  function obWrite(o) { try { localStorage.setItem(OBK, JSON.stringify(o)); } catch (e) {} }
+  const obCount = () => Object.keys(obRead()).length;
+  async function sendOne(tk, k, v, rev) {
+    const id = tk + '/' + k;
+    try {
+      await WRITE(tk, k, v);
+      const o = obRead(); if (o[id] && o[id].rev === rev) { delete o[id]; obWrite(o); }
+      const n = obCount(); setSync(n ? `저장됨 · 전송 대기 ${n}건` : '저장됨'); return true;
+    } catch (e) {
+      setSync(`저장 실패 — 이 기기에 보관 중 (전송 대기 ${obCount()}건) · 자동으로 다시 보냅니다`);
+      clearTimeout(retryT); retryT = setTimeout(flushOutbox, 15000); return false;
+    }
+  }
+  async function flushOutbox() {
+    if (local || !db) return; const o = obRead();
+    for (const id of Object.keys(o)) { const x = o[id]; if (pending[id]) continue; if (await sendOne(x.tk, x.k, x.v, x.rev)) unsent.delete(id); else break; }
+  }
+  function put(k, v) {
+    const tk = team.key, id = tk + '/' + k, rev = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+    vals[k] = { v, by: me, at: Date.now() }; unsent.add(id); progress();
+    if (!local && db) { const o = obRead(); o[id] = { tk, k, v, rev }; obWrite(o); }
+    clearTimeout(pending[id]);
+    const myT = pending[id] = setTimeout(async () => {
+      if (local || !db) { writeDoc(tk, k, v); unsent.delete(id); delete pending[id]; return; }
+      const ok = await sendOne(tk, k, v, rev);
+      if (pending[id] === myT) { delete pending[id]; if (ok && !(obRead()[id])) unsent.delete(id); }
+    }, 700);
+  }
+  function applyOutbox(tk) { const o = obRead(); Object.values(o).forEach((x) => { if (x.tk === tk) { vals[x.k] = { v: x.v, by: me, at: Date.now() }; unsent.add(tk + '/' + x.k); } }); }
+
+  const whoText = (k) => { const r = vals[k]; if (!r || !r.v) return ''; if (local || !db) return ''; return r.by && r.by === me ? '내가 씀' : '팀원이 씀'; };
+
+  let bound = [], derived = [];
+  // 팀 공동 칸 보호: 누가 쓰는 중인지 표시하고, 내가 쓰는 사이 팀원이 같은 칸을 고치면 덮어쓰기 전에 고르게 함
+  const sharedKey = (k) => !k.includes(ME()) && !/^ed-/.test(k);
+  const shareOn = () => !local && !!db;
+  function editorOf(k) { const v = get('ed-' + k); if (!v) return null; const [id, nm, at] = v.split('|'); if (!id || id === ME() || Date.now() - (+at || 0) > 30000) return null; return nm || '팀원'; }
+  function bindText(node, k, whoNode) {
+    node.id = 'f-' + k; node.value = get(k);
+    const b = { type: 'text', node, k, whoNode, seen: get(k), hold: false, edT: 0, bar: null, tag: null };
+    const mark = () => { if (!sharedKey(k) || !shareOn()) return; const now = Date.now(); if (now - b.edT > 10000) { b.edT = now; put('ed-' + k, ME() + '|' + (get('tp-nm-' + ME()) || '') + '|' + now); } };
+    node.addEventListener('focus', () => { mark(); showTag(b); });
+    node.addEventListener('blur', () => { if (b.edT && sharedKey(k) && shareOn()) { b.edT = 0; put('ed-' + k, ''); } });
+    node.addEventListener('input', () => { if (b.hold) return; put(k, node.value); b.seen = node.value; mark(); if (whoNode) whoNode.textContent = '쓰는 중'; refresh(); });
+    bound.push(b); if (whoNode) whoNode.textContent = whoText(k);
+  }
+  function showTag(b) {
+    if (!sharedKey(b.k) || !b.node.isConnected) return; const who = editorOf(b.k);
+    if (!b.tag) { b.tag = el('span', 'edtag'); b.node.after(b.tag); }
+    b.tag.textContent = who ? `${who} 님이 이 칸을 쓰는 중입니다 — 끝날 때까지 기다리거나 말로 나눠 맡으세요` : ''; b.tag.hidden = !who;
+  }
+  function showConflict(b, theirs) {
+    b.hold = true; if (b.bar) b.bar.remove();
+    const bar = el('div', 'conflict'); b.bar = bar; const r = vals[b.k] || {}; const who = (r.by && get('tp-nm-' + String(r.by).replace(/[^A-Za-z0-9]/g, ''))) || '팀원';
+    bar.append(el('b', null, `${who} 님이 방금 이 칸을 고쳤습니다. 어느 글을 남길까요?`), el('p', 'theirs', theirs || '(빈 칸으로 지움)'));
+    const t = el('div', 'tools');
+    const done = (v) => { b.hold = false; b.node.value = v; put(b.k, v); b.seen = get(b.k); bar.remove(); b.bar = null; refresh(); };
+    const b1 = el('button', 'btn', '팀원 글 받기'); b1.type = 'button'; b1.onclick = () => done(theirs);
+    const b2 = el('button', 'btn', '둘 다 합치기'); b2.type = 'button'; b2.onclick = () => { const m = b.node.value || '', t2 = theirs || ''; done(t2.includes(m) ? t2 : m.includes(t2) ? m : [m, t2].filter((x) => x.trim()).join('\n')); };
+    const b3 = el('button', 'btn', '내 글로 바꾸기'); b3.type = 'button'; b3.onclick = () => done(b.node.value);
+    t.append(b1, b2, b3); bar.append(t); (b.tag || b.node).after(bar);
+  }
+  function applyRemote() {
+    bound.forEach((b) => {
+      if (b.type !== 'text') { b.apply(); return; }
+      const remote = get(b.k), r = vals[b.k] || {}, focused = document.activeElement === b.node;
+      if (!focused) { if (b.node.value !== remote && !b.hold) { b.node.value = remote; b.seen = remote; } if (b.whoNode) b.whoNode.textContent = whoText(b.k); }
+      else if (shareOn() && sharedKey(b.k) && remote !== b.node.value && remote !== b.seen && r.by && r.by !== me) { b.seen = remote; showConflict(b, remote); }
+      if (shareOn()) showTag(b);
+    });
+    refresh();
+  }
+  function refresh() { derived.forEach((f) => f()); progress(); }
+
+  // ---------------- 공통 블록 ----------------
+  const concept = (pairs) => { const c = el('div', 'concept'); pairs.forEach(([a, b]) => c.append(el('b', null, a), el('span', null, b))); return c; };
+  const DOORS = ['1팀', '2팀', '3팀', '4팀', '5팀', '6팀', '7팀', '8팀', '9팀'];
+  function renderDoor() {
+    const box = $('tdoor'); if (!box || !team) return; box.replaceChildren();
+    const row = (lab, key, opts, hint) => { const r = el('div', 'drow'); r.append(el('b', null, lab)); const cs = el('div', 'chips'); opts.forEach((o) => { const b = el('button', 'chip', o); b.type = 'button'; b.setAttribute('aria-pressed', String(get(key) === o)); b.onclick = () => { put(key, get(key) === o ? '' : o); renderDoor(); }; cs.append(b); }); r.append(cs); if (hint) r.append(el('span', 'clab', hint)); box.append(r); };
+    row('팀원 수', 'nmem', ['4명', '5명', '6명', '7명'], get('nmem') ? '' : '← 오늘 우리 팀 인원을 한 번 누릅니다');
+  }
+  function marks(key, opts, multi) {
+    const box = el('div', 'chips');
+    const cur2 = () => multi ? get(key).split(',').filter(Boolean) : [get(key)];
+    const bs = opts.map(([val, lab, cls]) => { const b = el('button', 'mk ' + (cls || ''), lab); b.type = 'button';
+      b.onclick = () => { if (multi) { const s = new Set(cur2()); s.has(val) ? s.delete(val) : s.add(val); put(key, [...s].join(',')); } else put(key, get(key) === val ? '' : val); ap(); refresh(); };
+      box.append(b); return [val, b]; });
+    const ap = () => { const c = cur2(); bs.forEach(([v, b]) => b.setAttribute('aria-pressed', String(c.includes(v)))); };
+    bound.push({ type: 'set', apply: ap }); ap(); return box;
+  }
+  function ta(k, rows, ph) { const t = el('textarea'); t.rows = rows || 3; if (ph) t.placeholder = ph; bindText(t, k, null); return t; }
+  function writeBlock(k, o) {
+    const box = el('div', 'item'); if (o.title) box.append(el('div', 'where', o.title)); if (o.lead) box.append(el('p', 'lead', o.lead));
+    if (o.pat) { const r = el('div', 'row'); r.append(el('span', 'tagc', '틀')); const p = el('p', 'pat'); p.append(...patNodes(o.pat)); r.append(p); box.append(r); }
+    if (o.ex) { const r = el('div', 'row'); r.append(el('span', 'tagc', '예시')); r.append(el('p', 'ex', o.ex)); box.append(r); }
+    const r = el('div', 'row'); r.append(el('span', 'tagc', '우리 팀')); const w = el('div'); const t = el('textarea'); t.rows = o.rows || 3; t.placeholder = o.ph || (o.pat ? o.pat.replace(/\[|\]/g, '') : '여기에 씁니다');
+    const tools = el('div', 'tools'); const who = el('span', 'who'); tools.append(who); bindText(t, k, who); w.append(t, tools); r.append(w); box.append(r);
+    return box;
+  }
+  function stuck(items) { const d = el('details', 'stuck'); d.append(el('summary', null, '막히면 확인')); const ul = el('ul'); items.forEach((x) => ul.append(el('li', null, x))); d.append(ul); return d; }
+  function checkLabel(k, text) { const lb = el('label', 'chk'); const cb = el('input'); cb.type = 'checkbox'; cb.id = 'f-' + k; cb.checked = get(k) === '1'; cb.addEventListener('change', () => { put(k, cb.checked ? '1' : ''); refresh(); }); bound.push({ type: 'set', apply: () => { cb.checked = get(k) === '1'; } }); lb.append(cb, document.createTextNode(' ' + text)); return lb; }
+
+  // 위험 수준: 가능성 × 영향 (3×3 칸 위치)
+  const lvIndex = (s) => LV.indexOf(s);
+  function riskLevel(L, I) { const a = lvIndex(L), b = lvIndex(I); if (a < 0 || b < 0) return null; const s = a + b; return s <= 1 ? 0 : s === 2 ? 1 : 2; }
+  const LVCLS = ['lo', 'mid', 'hi'];
+  function matrix(lk, ik, prevL, prevI) {
+    const wrap = el('div'); const m = el('div', 'matrix');
+    m.append(el('div', 'ax', '영향 ↓ / 가능성 →'));
+    LV.forEach((l) => m.append(el('div', 'ax', l)));
+    const cells = [];
+    [2, 1, 0].forEach((ii) => { m.append(el('div', 'ax', LV[ii])); [0, 1, 2].forEach((li) => { const r = riskLevel(LV[li], LV[ii]); const c = el('div', 'cell ' + LVCLS[r], LV[r]); cells.push([li, ii, c]); m.append(c); }); });
+    const lab = el('p', 'level');
+    derived.push(() => {
+      const L = lvIndex(get(lk)), I = lvIndex(get(ik)); const pL = prevL ? lvIndex(get(prevL)) : -1, pI = prevI ? lvIndex(get(prevI)) : -1;
+      cells.forEach(([li, ii, c]) => { c.classList.toggle('on', li === L && ii === I); c.classList.toggle('was', prevL && li === pL && ii === pI && !(li === L && ii === I)); });
+      lab.replaceChildren(); const r = riskLevel(get(lk), get(ik));
+      lab.append(document.createTextNode(prevL ? '통제 후 위험 수준' : '위험 수준'));
+      const s = el('span', 'lv ' + (r == null ? 'na' : LVCLS[r]), r == null ? (get(lk) === '근거 부족' || get(ik) === '근거 부족' ? '근거 부족 — 판단 보류' : '가능성·영향을 고르면 표시') : LV[r]); lab.append(s);
+      if (prevL) { const p = riskLevel(get(prevL), get(prevI)); if (p != null && r != null) lab.append(document.createTextNode(p > r ? '  (통제 전보다 낮아짐 · 점선 칸이 통제 전)' : p === r ? '  (통제 전과 같음 — 통제가 가능성이나 영향을 실제로 낮추나?)' : '  (통제 전보다 높아짐 — 다시 확인)')); }
+    });
+    wrap.append(m, lab); return wrap;
+  }
+  const lvOpts = [['낮음', '낮음', 'ok'], ['중간', '중간', 'mid'], ['높음', '높음', 'no'], ['근거 부족', '근거 부족', '']];
+
+  // ---------------- 단계 ----------------
+  const hasTech = () => !!team.tech;
+  const quizDone = () => QUIZ.every((_, i) => get('s2-q' + i)) && get('s2-tr');
+  const ME = () => String(me || (me = localId())).replace(/[^A-Za-z0-9]/g, '');
+  // ③ 후보: 사람마다 자기 줄(s3-<내 id>-r). 예전 번호 줄(0~5)에 쓴 내용도 함께 읽음
+  const ideas = () => { const ids = new Set(); Object.keys(cur || {}).forEach((k) => { const m = k.match(/^s3-([A-Za-z0-9]+)-r$/); if (m && get(k).trim()) ids.add(m[1]); }); return [...ids].sort((a, b) => (/^\d$/.test(a) ? 0 : 1) - (/^\d$/.test(b) ? 0 : 1)); };
+  const candName = (id) => /^\d$/.test(id) ? (get(`s3-${id}-n`) || '이름 없음') : (get('tp-nm-' + id) || '(이름 미입력)');
+  const DONE = [
+    () => (hasTech() || get('s1-tech').trim()) && get('s1-review').trim(),
+    () => quizDone() && get('s2-own').trim(),
+    () => ideas().length >= 2 && !!get('s3-pick') && !!get(`s3-${get('s3-pick')}-r`).trim(),
+    () => ['s4-asset', 's4-threat'].every((k) => get(k).trim()) && get('s4-cia') && get('s4-L') && get('s4-I') && get('s4-basis').trim(),
+    () => ['s5-prev', 's5-det', 's5-resp', 's5-rec'].filter((k) => get(k).trim()).length >= 2 && get('s5-L2') && get('s5-I2') && get('s5-res').trim() && get('s5-own').trim(),
+    () => incomingKeys().some((f) => get(`s6-${f}-v`) && get(`s6-${f}-why`).trim()) || (get('s6-manual').trim() && get('s6-manual-v') && get('s6-manual-why').trim()),
+    () => get('s7-rec').trim() && get('s7-roles').trim(),
+    () => !!(get('tp-final') && (get('tp-final') !== 'etc' || get('tp-etcname').trim()) && get('tp-why').trim() && get('tp-q').trim() && get('tp-case').trim() && tocOwn('3') && tocOwn('4')),
+    () => !!(get('s7-ai').trim() && get('s7-ai-v') && get('s7-ai-why').trim()),
+    () => ['s9-mtd', 's9-ir', 's9-treat-why', 's9-final'].every((k) => get(k).trim()) && !!get('s9-treat'),
+  ];
+  function head(c, i, title) { const h = el('div', 'stagehead'); const tue = STEPS[i].day === 'tue'; h.append(el('span', 'eyebrow', `단계 ${'①②③④⑤⑥⑦⑧⑨⑩'[i]}`), el('span', 'daytag' + (tue ? ' tue' : ''), (tue ? '11/10(화)' : '11/9(월)'))); c.append(h, el('h2', null, title)); }
+
+  function renderS1(c) {
+    head(c, 0, '지난주 우리가 적은 대책은 무엇을 지키려던 것인가');
+    c.append(concept([['핵심 개념', '정보자산 = 서비스가 들고 있어서 잃거나 새면 피해가 생기는 정보(연락처·결제 기록·위치 등). 보호는 "모든 것"이 아니라 우리 자산 중 무엇을 먼저 지킬지 정하는 데서 시작합니다.'], ['오늘 쓰는 법', '지난주 기술대책 문장은 그대로 두고, 그 문장이 지키는 자산과 빠진 점을 아래에 적습니다.']]));
+    const it = el('div', 'item'); it.append(el('div', 'where', '1. 지난번 ⑤ 기술대책'));
+    if (hasTech()) { it.append(el('p', 'ex', team.tech)); it.append(el('p', 'lead', '우리 팀이 지난번에 제출한 문장입니다 (' + (team.techSrc || '지난번 워크시트 저장본') + ').')); }
+    else {
+      it.append(el('p', 'notice', '지난번 워크시트와 팀 슬라이드에 기술대책 문장이 없습니다. 지금 1~2문장으로 먼저 씁니다. 지난번에 쓴 장면·데이터 표에서 출발하세요.'));
+      const r = el('div', 'row'); r.append(el('span', 'tagc', '틀')); const p = el('p', 'pat'); p.append(...patNodes('[어떤 데이터]는 [누가만] 볼 수 있게 하고, [어떤 기록]을 남긴다')); r.append(p); it.append(r);
+      const r2 = el('div', 'row'); r2.append(el('span', 'tagc', '우리 팀')); r2.append(ta('s1-tech', 2, '예: 견적서 사진은 차량번호를 가린 뒤 저장하고, 정비소에는 예약에 필요한 연락처만 보낸다')); it.append(r2);
+    }
+    c.append(it);
+    c.append(writeBlock('s1-review', { title: '2. 이 대책이 지키는 자산과 빠진 점', lead: '대책 문장 속 단어 하나하나가 무엇을 막는지 짚고, 막지 못하는 상황 하나를 적습니다.', pat: '이 대책은 [자산]의 [유출·변조·중단]을 막는다. 하지만 [막지 못하는 상황]은 남는다.', ex: '(가상 스터디룸 예약 앱) "예약자 전화번호는 관리자만 본다"는 연락처 유출을 막는다. 하지만 관리자 계정 자체가 탈취되면 막지 못하고, 누가 봤는지 기록도 없다.', rows: 3 }));
+    c.append(ctrlMenu('지난주 대책이 이 표의 어느 줄에 해당하는지 찾고, 오른쪽 「못 막는 것」 칸을 참고해 위 2번의 [막지 못하는 상황]을 우리 서비스 말로 바꿔 씁니다.', false));
+    c.append(stuck(['대책이 "보안을 강화한다"처럼 흐릿하다 → 어떤 데이터에, 누구에게, 무엇을 하는지로 다시 씁니다.', '빠진 점이 안 떠오른다 → 내부 직원이 일부러 하면? 실수로 하면? 서버가 멈추면?']));
+  }
+  function renderS2(c) {
+    head(c, 1, '무엇이 깨지는가(기밀성·무결성·가용성) · 위협과 위험은 어떻게 다른가');
+    c.append(concept([['CIA란', '정보 보호의 세 목표를 영어 머리글자로 줄인 말. 기밀성(C) = 볼 사람만 본다 · 무결성(I) = 정보가 허락 없이 바뀌지 않는다 · 가용성(A) = 필요할 때 쓸 수 있다.'], ['위협 ≠ 위험', '위협 = 피해를 일으킬 수 있는 사건·원인(해킹 시도, 직원 실수, 서버 장애). 위험 = 그 위협이 우리 자산에 피해를 낼 가능성 × 그때의 영향.'], ['통제 4종', '예방(일어나지 않게) · 탐지(일어나면 알아채게) · 대응(피해를 줄이게) · 복구(원래대로 돌리게). 통제를 해도 남는 위험이 잔여 위험입니다.']]));
+    const it = el('div', 'item'); it.append(el('div', 'where', '1. 무엇이 깨졌나 — 팀이 함께 고르면 답이 나옵니다'));
+    QUIZ.forEach((qq, i) => {
+      const box = el('div', 'quiz'); box.append(el('div', 'q', `사례 ${i + 1}. ${qq.q}`)); box.append(marks('s2-q' + i, CIA.map(([v, l]) => [v, l])));
+      const fb = el('p', 'fb'); derived.push(() => { const v = get('s2-q' + i); fb.className = 'fb ' + (v ? (v === qq.a ? 'ok' : 'no') : ''); fb.textContent = !v ? '' : v === qq.a ? '맞습니다. ' + qq.why : '다시 보세요. 볼 사람만 보는가, 바뀌지 않았는가, 쓸 수 있는가?'; }); box.append(fb); it.append(box);
+    });
+    const tb = el('div', 'quiz'); tb.append(el('div', 'q', '사례 4. ' + TR.q)); tb.append(marks('s2-tr', TR.opts.map(([v, l]) => [v, l])));
+    const fb2 = el('p', 'fb'); derived.push(() => { const v = get('s2-tr'); fb2.className = 'fb ' + (v ? (v === TR.a ? 'ok' : 'no') : ''); fb2.textContent = !v ? '' : v === TR.a ? '맞습니다. ' + TR.why : '다시 보세요. 가능성과 영향까지 말한 문장은 어느 쪽인가?'; }); tb.append(fb2); it.append(tb);
+    c.append(it);
+    c.append(writeBlock('s2-own', { title: '2. 우리 서비스로 바꿔 쓰기', lead: '위 사례 하나를 우리 서비스 장면으로 옮기고, C·I·A 중 무엇이 깨지는지 적습니다.', pat: '우리 서비스에서 [누가] [무엇을] 하면 [C·I·A]가 깨진다', ex: '(가상 스터디룸 예약 앱) 예약 서버가 시험 기간에 멈추면 학생들이 방을 잡지 못한다 → 가용성(A)', rows: 2 }));
+  }
+  function renderS3(c) {
+    head(c, 2, '각자 위험 후보 한 문장 → 팀이 하나를 고릅니다');
+    c.append(concept([['순서', '먼저 각자 혼자 씁니다(다른 사람 칸을 보지 않기). 그다음 모두의 후보를 읽고, 팀이 가장 먼저 다룰 하나를 고릅니다.'], ['고르는 기준', '"가장 무서운 것"이 아니라 우리 서비스에 실제로 있는 자산이고, 오늘 통제까지 설계할 수 있는 것.']]));
+    const it = el('div', 'item'); it.append(el('div', 'where', '후보 표 — 한 사람이 한 줄씩 (내 줄은 나만 고칩니다)'), el('p', 'lead', '이름 칸에는 반드시 자기 실명을 적습니다 (별명 안 됨 — 누가 어떤 후보를 냈는지 확인합니다). 후보는 우리 팀 서비스 「' + team.topic + '」에서 실제로 일어날 수 있는 장면으로 씁니다. 회색 줄은 우리 팀 서비스로 쓴 예시입니다.'));
+    const tw = el('div', 'tw'); const tb = el('table', 'g'); tb.innerHTML = '<thead><tr><th style="width:18%">이름 (실명)</th><th>위험 후보 한 문장 (누가 · 무엇을 통해 · 어떤 자산이 · 유출/변조/중단)</th><th style="width:16%">팀 선택</th></tr></thead>'; const body = el('tbody');
+    const er = el('tr', 'exr'); er.append(el('td', null, '(예) 김민준'), el('td', null, team.riskEx || '퇴사한 직원 계정이 남아 있어, 그 계정으로 고객 전화번호를 내려받을 수 있다 (유출)'), el('td', null, '—')); body.append(er);
+    const pickBtn = (id) => { const b = el('button', 'mk', '이걸로'); b.type = 'button'; b.onclick = () => { if (!get(`s3-${id}-r`).trim()) return; put('s3-pick', get('s3-pick') === id ? '' : id); refresh(); }; derived.push(() => { b.setAttribute('aria-pressed', String(get('s3-pick') === id)); b.disabled = !get(`s3-${id}-r`).trim(); }); return b; };
+    const mine = ME();
+    { const tr = el('tr', 'minerow'); const t1 = el('td'); const n = el('input'); n.type = 'text'; n.placeholder = '내 실명'; bindText(n, 'tp-nm-' + mine, null); t1.append(el('div', 'clab', '내 줄'), n);
+      const t2 = el('td'); const r = el('textarea'); r.rows = 2; r.setAttribute('aria-label', '내 위험 후보'); r.placeholder = '내 후보 한 문장 — 이 줄은 나만 고칠 수 있습니다'; bindText(r, `s3-${mine}-r`, null); t2.append(r);
+      const t3 = el('td'); t3.append(pickBtn(mine)); tr.append(t1, t2, t3); body.append(tr); }
+    const others = el('tbody');
+    derived.push(() => { others.replaceChildren(); const ids = ideas().filter((id) => id !== mine);
+      if (!ids.length) { const tr = el('tr'); const td = el('td', 'clab', '팀원 후보가 들어오면 여기에 한 줄씩 나타납니다 (팀원 줄은 그 사람만 고칠 수 있습니다).'); td.colSpan = 3; tr.append(td); others.append(tr); return; }
+      ids.forEach((id) => { const tr = el('tr'); tr.append(el('td', null, candName(id)), el('td', null, get(`s3-${id}-r`))); const t3 = el('td'); t3.append(pickBtn(id)); tr.append(t3); others.append(tr); }); });
+    tb.append(body, others); tw.append(tb); it.append(tw);
+    const g = el('p', 'gate'); derived.push(() => { const n = ideas().length; g.textContent = n < 2 ? `후보 ${n}개 · 2개 이상 모이면 하나를 고릅니다` : !get('s3-pick') ? `후보 ${n}개 · 팀이 하나를 고르세요` : '골랐습니다. ④단계에서 이 위험을 풀어 씁니다.'; }); it.append(g);
+    c.append(it);
+    c.append(stuck(['"해킹당한다"만 썼다 → 누가, 무엇을 통해, 우리 서비스의 어떤 데이터를?', '모두 같은 후보다 → 그 장면에서 내부 실수 · 외부 공격 · 시스템 장애 중 다른 원인 하나를 더 찾아봅니다.']));
+  }
+  function renderS4(c) {
+    head(c, 3, '고른 위험 한 건: 자산 → 위협 → 가능성 · 영향');
+    c.append(concept([['핵심 개념', '위험 수준 = 가능성 × 영향. 여기서는 숫자를 곱하지 않고 아래 3×3 칸의 위치로 봅니다. 자료가 없어 판단할 수 없으면 "근거 부족"을 고르고 무엇을 확인해야 하는지 적습니다.'], ['연결', '여기 고른 칸이 ⑤단계에서 통제 후 어디로 옮겨 가는지 비교합니다.']]));
+    const pv = el('p', 'lead'); derived.push(() => { const p = get('s3-pick'); pv.textContent = p && get(`s3-${p}-r`) ? '③에서 고른 후보: ' + get(`s3-${p}-r`) : '③단계에서 후보를 먼저 고르면 여기 나타납니다.'; }); c.append(pv);
+    const ab = writeBlock('s4-asset', { title: '1. 지킬 정보자산', lead: '우리 팀 서비스 「' + team.topic + '」가 실제로 저장하거나 주고받는 정보입니다. 아래에서 ③에서 고른 위험과 관련된 것을 누르면 칸에 들어갑니다. 빠진 것이 있으면 칸에 직접 더 씁니다.', rows: 2, ph: '위 버튼을 누르거나 직접 씁니다' });
+    const assets = team.assetList || [];
+    if (assets.length) {
+      const ar = el('div', 'row'); ar.append(el('span', 'tagc', '우리 팀 자산')); const cs = el('div', 'chips');
+      const list = () => get('s4-asset').split(/\s*[\/,\n]\s*/).map((x) => x.trim()).filter(Boolean);
+      const bs = assets.map((x) => { const bt = el('button', 'mk', x); bt.type = 'button'; bt.onclick = () => { const l = list(); const i = l.indexOf(x); i >= 0 ? l.splice(i, 1) : l.push(x); put('s4-asset', l.join(' / ')); applyRemote(); }; cs.append(bt); return [x, bt]; });
+      derived.push(() => { const l = list(); bs.forEach(([x, bt]) => bt.setAttribute('aria-pressed', String(l.includes(x)))); });
+      ar.append(cs); ab.insertBefore(ar, ab.querySelector('.row'));
+    }
+    c.append(ab);
+    c.append(writeBlock('s4-threat', { title: '2. 위협 시나리오', pat: '[누가] [무엇을 통해] [어떤 일]을 해서 [자산]이 [유출·변조·중단]된다', ex: '(가상 스터디룸 예약 앱) 퇴사한 조교가 지워지지 않은 계정으로 로그인해 예약자 전화번호 목록을 내려받는다 → 유출', rows: 3 }));
+    const it = el('div', 'item'); it.append(el('div', 'where', '3. 무엇이 깨지나 — 기밀성·무결성·가용성 (여럿 고를 수 있음)')); it.append(marks('s4-cia', CIA.map(([v, l]) => [v, l]), true)); c.append(it);
+    const it2 = el('div', 'item'); it2.append(el('div', 'where', '4. 가능성과 영향 — 팀 추정'));
+    const g = el('div', 'grid4'); const a = el('div'); a.append(el('span', 'fl', '가능성 (얼마나 일어날 것 같나)'), marks('s4-L', lvOpts)); const b = el('div'); b.append(el('span', 'fl', '영향 (일어나면 피해가 얼마나 큰가)'), marks('s4-I', lvOpts)); g.append(a, b); it2.append(g);
+    it2.append(matrix('s4-L', 's4-I')); c.append(it2);
+    const it3 = el('div', 'item'); it3.append(el('div', 'where', '5. 그렇게 판단한 근거와 종류'), el('p', 'lead', '사실(자료로 확인) · 추론(자료에서 미루어 봄) · 가정(아직 확인 못 함)을 구분합니다. 가정이면 무엇을 확인해야 하는지도 씁니다.'));
+    it3.append(marks('s4-ev', [['사실', '사실'], ['추론', '추론'], ['가정', '가정']])); it3.append(ta('s4-basis', 3, '예: [가정] 조교 계정 삭제 절차가 없다고 봄 — 학교 운영팀에 퇴사자 계정 처리 방식을 확인해야 함')); c.append(it3);
+    c.append(stuck(['모두 "높음/높음"이다 → 정말 자주 일어나나? 일어나면 누가 얼마나 피해를 보나? 하나는 다른 칸일 가능성이 큽니다.', '근거가 없다 → "근거 부족"을 고르는 것도 정답입니다. 무엇을 확인하면 판단할 수 있는지 적으세요.']));
+  }
+  function renderS5(c) {
+    head(c, 4, '통제를 설계하고, 그래도 남는 위험을 적습니다');
+    c.append(concept([['핵심 개념', '예방 = 일어나지 않게 · 탐지 = 일어나면 알아채게 · 대응 = 피해를 줄이게 · 복구 = 원래대로 돌리게. 4종 중 2종 이상을 씁니다. ①에서 본 지난주 대책이 어느 칸에 해당하는지 먼저 찾으세요.'], ['잔여 위험', '통제를 해도 없앨 수 없는 위험. "없음"은 답이 아닙니다. 남는 위험을 알고 받아들이는 것까지가 정보 보호 계획입니다.']]));
+    const tech = hasTech() ? team.tech : get('s1-tech');
+    if (tech) c.append(el('p', 'lead', '지난주 대책: ' + tech));
+    c.append(ctrlMenu('④에서 고른 위험에 맞는 대책을 종류가 다르게 2개 이상 고릅니다. 표의 예시를 그대로 옮기지 말고 우리 서비스의 데이터·역할 이름으로 바꿔 씁니다. 「못 막는 것」 칸은 아래 3번 「남는 위험」의 출발점입니다.', false));
+    const it = el('div', 'item'); it.append(el('div', 'where', '1. 통제 4종 — 2종 이상'));
+    const g = el('div', 'grid4');
+    [['s5-prev', '예방', '예: 퇴사 당일 계정 삭제 체크리스트 · 최소 권한'], ['s5-det', '탐지', '예: 전화번호 대량 조회 시 관리자 알림 · 접근 기록'], ['s5-resp', '대응', '예: 의심 계정 즉시 잠금 · 피해 고객 안내'], ['s5-rec', '복구', '예: 백업으로 예약 기록 복원 · 비밀번호 일괄 변경']].forEach(([k, l, h]) => { const d = el('div'); const lb = el('label', null, l); lb.htmlFor = 'f-' + k; d.append(lb, el('span', 'hint', h), ta(k, 3)); g.append(d); });
+    it.append(g); c.append(it);
+    const it2 = el('div', 'item'); it2.append(el('div', 'where', '2. 통제 후 가능성과 영향'), el('p', 'lead', '통제가 가능성을 낮추는지, 영향을 낮추는지 생각하고 고릅니다. 점선 칸이 ④단계(통제 전) 위치입니다.'));
+    const g2 = el('div', 'grid4'); const a = el('div'); a.append(el('span', 'fl', '통제 후 가능성'), marks('s5-L2', lvOpts)); const b = el('div'); b.append(el('span', 'fl', '통제 후 영향'), marks('s5-I2', lvOpts)); g2.append(a, b); it2.append(g2);
+    it2.append(matrix('s5-L2', 's5-I2', 's4-L', 's4-I')); c.append(it2);
+    c.append(writeBlock('s5-res', { title: '3. 그래도 남는 위험', pat: '[통제]를 해도 [어떤 상황]에서는 [어떤 피해]가 남는다', ex: '(가상 스터디룸 예약 앱) 권한이 있는 현직 관리자가 전화번호를 사적으로 쓰는 것은 기록은 남지만 막을 수는 없다', rows: 2 }));
+    c.append(writeBlock('s5-own', { title: '4. 실행·점검 담당 (역할 이름)', lead: '사람 이름이 아니라 서비스 안의 역할로 씁니다.', ex: '운영 담당: 매주 월요일 계정 목록 점검 · 개발 담당: 대량 조회 알림 설정', rows: 2 }));
+    c.append(writeBlock('s5-biz', { title: '5. 고객과 우리 사업에 미치는 영향 (선택)', lead: 'Ⅶ장 제언의 근거가 됩니다. 시간·비용·신뢰 중 무엇이 깨지나?', rows: 2, ph: '예: 유출되면 학생들이 앱을 지우고, 학교 제휴가 끊길 수 있다' }));
+    c.append(stuck(['통제가 모두 예방이다 → 예방이 실패했을 때 누가 어떻게 알아채나(탐지)?', '통제 후 칸이 그대로다 → 그 통제가 실제로 가능성이나 영향 중 무엇을 낮추는지 한 줄로 설명할 수 있나?']));
+  }
+  // 다른 팀 반론
+  const incomingKeys = () => Object.keys(vals).filter((k) => /^rt-from-/.test(k) && get(k).trim()).map((k) => k.slice(8));
+  const teamLabel = (k) => (TEAMS.find((t) => t.key === k) || {}).label || k;
+  function renderS6(c) {
+    head(c, 5, '다른 팀이 우리 통제를 깨 보고, 우리는 판단합니다');
+    c.append(concept([['방법', '짝 팀은 서비스가 비슷한 팀으로 정해져 있습니다(고르지 않습니다). 짝 팀의 ④·⑤를 보고 "이 통제가 실패하는 상황" 하나를 보냅니다. 우리 팀에 온 반론은 아래에서 반영·보류·반박을 고르고 이유를 씁니다.'], ['왜', '스스로 만든 통제의 빈틈은 스스로 보기 어렵습니다. 반론을 받아 고친 흔적이 보고서의 설득력이 됩니다.']]));
+    if (local || !db) {
+      c.append(el('p', 'notice', '우리 짝 팀: ' + teamLabel(PAIR[team.key]) + ' — 지금 화면은 팀 공유가 안 되어 반론을 화면으로 보낼 수 없습니다. 짝 팀과 직접 말로 주고받고, 받은 반론을 아래에 적습니다.'));
+      c.append(writeBlock('s6-manual', { title: '짝 팀 「' + teamLabel(PAIR[team.key]) + '」에게서 받은 반론', rows: 3, ph: '예: 잠금 통제는 관리자가 휴가일 때 아무도 못 푼다' }));
+      const it = el('div', 'item'); it.append(el('div', 'where', '우리 판단')); it.append(marks('s6-manual-v', [['수용', '반영', 'ok'], ['보류', '보류', 'mid'], ['반박', '반박', 'no']])); it.append(ta('s6-manual-why', 2, '이유와, 반영했다면 고친 통제')); c.append(it);
+      return;
+    }
+    const it = el('div', 'item'); it.append(el('div', 'where', '1. 짝 팀에 반론 보내기'));
+    const pk = PAIR[team.key];
+    if (pk && get('s6-partner') !== pk) { put('s6-partner', pk); watchPartner(); }
+    { const pp = el('p', 'pat'); pp.append('우리 짝 팀: ', el('b', null, teamLabel(pk)), ' — ' + ((TEAMS.find((t) => t.key === pk) || {}).topic || '')); it.append(pp); }
+    if (pk) {
+      const pv = (k) => (partnerVals[k] && partnerVals[k].v) || '';
+      const dlist = el('dl', 'peer');
+      const addRow = (dt, dd) => { dlist.append(el('dt', null, dt), el('dd', null, dd || '(아직 안 씀)')); };
+      derived.push(() => { dlist.replaceChildren(); const L = pv('s4-L'), I = pv('s4-I'), L2 = pv('s5-L2'), I2 = pv('s5-I2'); const r1 = riskLevel(L, I), r2 = riskLevel(L2, I2);
+        addRow('지킬 자산', pv('s4-asset')); addRow('위협 시나리오', pv('s4-threat')); addRow('위험 수준 (통제 전 → 후)', `${r1 == null ? '-' : LV[r1]} → ${r2 == null ? '-' : LV[r2]}`);
+        addRow('통제', [['예방', 's5-prev'], ['탐지', 's5-det'], ['대응', 's5-resp'], ['복구', 's5-rec']].filter(([, k]) => pv(k)).map(([l, k]) => `${l}: ${pv(k)}`).join(' / ')); addRow('남는 위험', pv('s5-res')); });
+      it.append(dlist);
+      const out = el('textarea'); out.rows = 3; out.id = 'f-rt-out'; out.placeholder = '이 통제가 실패하는 상황 하나: 언제 · 누가 · 어떻게'; out.value = pv('rt-from-' + team.key);
+      const msg = el('span', 'warnline');
+      let t0 = null; out.addEventListener('input', () => { clearTimeout(t0); msg.textContent = '보내는 중…'; t0 = setTimeout(async () => { try { await writeDoc(pk, 'rt-from-' + team.key, out.value); put('s6-sent', pk); msg.textContent = teamLabel(pk) + ' 팀 화면에 보냈습니다.'; } catch (e) { msg.textContent = '보내지 못했습니다 — 다시 입력해 주세요'; } }, 800); });
+      const tl = el('div', 'tools'); tl.append(msg); it.append(out, tl);
+    }
+    c.append(it);
+    const it2 = el('div', 'item'); it2.append(el('div', 'where', '2. 우리 팀에 온 반론'));
+    const box = el('div'); box.style.display = 'flex'; box.style.flexDirection = 'column'; box.style.gap = '10px';
+    const draw = () => {
+      const keys = incomingKeys(); const have = new Set([...box.querySelectorAll('.incoming')].map((n) => n.dataset.k));
+      if (keys.length === have.size && keys.every((k) => have.has(k))) { box.querySelectorAll('.incoming .rtx').forEach((n) => { n.textContent = get('rt-from-' + n.dataset.k); }); return; }
+      box.replaceChildren();
+      if (!keys.length) { box.append(el('p', 'lead', '아직 온 반론이 없습니다. 다른 팀이 보내면 여기 바로 나타납니다.')); return; }
+      keys.forEach((f) => { const n = el('div', 'incoming'); n.dataset.k = f; n.append(el('span', 'from', teamLabel(f) + ' 팀의 반론')); const tx = el('p', 'pat rtx', get('rt-from-' + f)); tx.dataset.k = f; n.append(tx);
+        n.append(marks(`s6-${f}-v`, [['수용', '반영', 'ok'], ['보류', '보류', 'mid'], ['반박', '반박', 'no']])); n.append(ta(`s6-${f}-why`, 2, '이유 · 반영했다면 ⑤단계에서 고친 통제')); box.append(n); });
+    };
+    derived.push(draw); it2.append(box); c.append(it2);
+    c.append(stuck(['반론이 "보안이 약하다"뿐이다 → 언제, 누가, 어떻게 통제를 우회하는지 장면으로 씁니다.', '모두 반영했다 → 비용·불편 때문에 받아들이기 어려운 반론은 없었나? 보류·반박도 이유가 있으면 좋은 판단입니다.']));
+  }
+  function aiPrompt() {
+    const r1 = riskLevel(get('s4-L'), get('s4-I')), r2 = riskLevel(get('s5-L2'), get('s5-I2'));
+    const rt = incomingKeys().map((f) => `${get('rt-from-' + f)} → 우리 판단: ${get(`s6-${f}-v`) || '미정'}`).join(' / ') || get('s6-manual') || '없음';
+    return `너는 대학 「경영정보학개론」 수업에서 학생 팀의 정보 보호 계획을 검토하는 정보보안 담당자다.\n\n[우리 서비스] ${team.topic}\n[지킬 자산] ${get('s4-asset') || '[미작성]'}\n[위협 시나리오] ${get('s4-threat') || '[미작성]'}\n[위험 수준] 통제 전 ${r1 == null ? '미정' : LV[r1]} → 통제 후 ${r2 == null ? '미정' : LV[r2]}\n[통제] 예방: ${get('s5-prev') || '-'} / 탐지: ${get('s5-det') || '-'} / 대응: ${get('s5-resp') || '-'} / 복구: ${get('s5-rec') || '-'}\n[남는 위험] ${get('s5-res') || '[미작성]'}\n[다른 팀 반론과 우리 판단] ${rt}\n\n[요청]\n1) 우리가 놓친 위협 시나리오 1개를 제안하라. 내부 직원·외부 공격·시스템 장애 중 우리가 다루지 않은 원인으로.\n2) 우리 통제 중 실제로 작동하기 어려운 것 1개와 그 이유.\n[규칙] 법 조항·통계·실제 사고 사례를 지어내지 마라. 확실하지 않으면 "확인 필요"라고 써라. 공격 방법은 쓰지 마라. 5문장 이내.`;
+  }
+  function renderS7(c) {
+    head(c, 6, '오늘 결과를 최종보고서 Ⅶ장 제언 초안으로 옮기고 중간 저장합니다');
+    c.append(concept([['Ⅶ장 제언', '최종보고서 Ⅶ장 「위험·윤리 요소(제언)」에 들어갈 2~3문장: 가장 중요한 위험 → 핵심 통제 → 남는 위험과 받아들이는 이유. 내일(화) AI 검토와 복구 설계를 거쳐 ⑩에서 최종본으로 고칩니다.'], ['왜 지금 쓰나', '오늘 만든 표를 한 문단으로 줄여 보면 이어지지 않는 칸이 바로 보입니다. 그 칸이 내일 고칠 곳입니다.']]));
+    c.append(writeBlock('s7-rec', { title: '1. Ⅶ장 제언 초안 (2~3문장)', pat: '[서비스]에서 가장 먼저 지킬 위험은 [자산]의 [유출·변조·중단]이다. 이를 위해 [핵심 통제]를 둔다. 그래도 [남는 위험]은 남으며, [받아들이는 이유·추가로 확인할 것].', ex: '(가상 스터디룸 예약 앱) 가장 먼저 지킬 위험은 퇴사자 계정을 통한 예약자 전화번호 유출이다. 이를 위해 퇴사 당일 계정 삭제와 대량 조회 알림을 둔다. 권한 있는 현직 관리자의 사적 이용은 남으며, 접근 기록 월 1회 점검으로 알아채는 수준에서 받아들인다.', rows: 4 }));
+    c.append(writeBlock('s7-roles', { title: '2. 오늘 맡은 역할 · 기여', lead: '누가 어느 칸을 맡았는지. 최종보고서 팀 기여 기록에 씁니다.', rows: 2, ph: '예: 위험 후보 정리 ○○ / 가능성·영향 근거 ○○ / 통제 설계 ○○ / 반론 대응·기록 ○○' }));
+    const it4 = el('div', 'item'); it4.append(el('div', 'where', '3. 중간 저장 (PDF · 선택)'), el('p', 'lead', '오늘까지의 결과를 문서로 저장해 둡니다. 제출은 내일 ⑩단계의 최종 PDF로 합니다.'));
+    const pt = el('div', 'tools'); const pb = el('button', 'btn', '중간 PDF 저장'); pb.type = 'button'; const pm = el('span', 'warnline'); pb.onclick = () => savePDF(pb, pm); pt.append(pb, pm); it4.append(pt); c.append(it4);
+    c.append(el('p', 'notice', '⑦까지 끝나면 바로 ⑧에서 기말 프로젝트 주제를 정합니다.'));
+    c.append(stuck(['제언이 "보안을 강화해야 한다"로 끝난다 → ④의 자산 이름, ⑤의 통제 이름, 남는 위험을 그대로 넣습니다.', '세 문장이 서로 다른 위험을 말한다 → ③에서 고른 위험 한 건만 씁니다.']));
+  }
+  // ---------------- ⑧ 기말 프로젝트 주제 정하기 ----------------
+  const TOPICS = [
+    ['erp', 'ERP (전사적 자원관리)', '주문·재고·회계·인사처럼 부서마다 따로 있던 정보를 한 시스템에 모아, 모든 부서가 같은 숫자를 보게 하는 것', '기업이 ERP를 들여오면 일하는 방식과 조직이 어떻게 바뀌고, 왜 도입에 실패하기도 하나?'],
+    ['db', 'DB (데이터베이스)', '정보를 표로 정리해 저장하고, 필요할 때 빨리 찾고 서로 연결하는 구조', '기업은 고객·주문 데이터를 어떻게 관리하고, 그 데이터가 의사결정을 어떻게 돕나?'],
+    ['dx', 'DX (디지털 전환)', '종이·전화·사람 손으로 하던 일을 디지털로 바꿔, 일하는 방식 자체를 바꾸는 것', '어떤 산업이 디지털 전환으로 크게 바뀌었고, 성공한 기업과 실패한 기업은 무엇이 달랐나?'],
+    ['sec', '정보보안', '지켜야 할 정보를 정하고, 위험을 따져 대책을 세우는 것 — 오늘 ①~⑦에서 배운 개념', '실제 보안 사고에서 기업은 무엇을 잃었고, 보안은 비용인가 투자인가?'],
+    ['big', '빅데이터', '많이 쌓인 기록(클릭·위치·구매 등)에서 사람이 못 보던 패턴을 찾아내는 것', '기업은 쌓인 데이터로 무엇을 미리 알아내고, 그 과정에서 개인정보 문제는 없나?'],
+    ['bi', 'BI (비즈니스 인텔리전스)', '데이터를 지표와 대시보드로 보여 줘서 경영자가 근거를 보고 결정하게 돕는 것', '기업 경영자는 어떤 숫자를 보고 결정하고, BI가 그 결정을 얼마나 바꿨나?'],
+    ['ai', '인공지능과 자동화', '사람이 하던 판단(추천·분류·예측)을 AI가 돕고, 반복 업무는 프로그램이 대신 하게 하는 것', '기업은 어떤 일을 AI·자동화에 맡기고, 무엇은 사람이 끝까지 확인해야 하나?'],
+    ['trend', '새로운 트렌드 기술 및 애플리케이션', '사물인터넷(기기끼리 연결)·클라우드·위치 기반 서비스처럼 새로 퍼지는 기술을 실제 사업에 쓰는 것', '요즘 퍼지는 기술 하나가 어떤 기업·산업을 어떻게 바꾸고 있고, 한계는 무엇인가?'],
+    ['future', '경영정보학의 도전과 미래 전망', '정보기술이 바꿀 일자리·윤리·규제 문제와, 기업이 앞으로 정보시스템을 어떻게 갖춰야 하는지 내다보는 것', '5년 뒤 기업의 정보시스템은 어떻게 달라지고, 누가 일자리나 권리를 잃을 수 있나?'],
+    ['etc', '기타 — 경영정보 관련 주제 직접 제안', '위 9개 밖이지만 수업에서 배운 경영정보 개념(CRM·SCM·플랫폼·클라우드·전자상거래 등)과 이어지는 주제', '이 주제가 수업 개념 중 무엇과 이어지나? 실제 기업 사례를 찾을 수 있나?'],
+  ];
+  const TOC = [
+    ['1', 'Ⅰ. 서론 (배경 및 목적)', '왜 이 주제가 지금 중요한가 + 이 보고서로 무엇을 밝히려 하나', '예: 편의점 점포 수는 늘었는데 발주 실수로 버리는 상품도 늘었다 → BI가 이걸 줄일 수 있는지 본다'],
+    ['2', 'Ⅱ. 개념 및 구성 요소', '핵심 용어 뜻과 무엇으로 이루어지는지 (수업 용어 그대로)', '예: BI의 뜻 · 데이터 웨어하우스 · 대시보드 · KPI(핵심 성과지표)'],
+    ['3', 'Ⅲ. MIS 관점 분석 ★', '이 주제가 경영정보시스템의 목표(효율성·효과성, C·I·A 등)와 어떻게 이어지나 — 보고서의 핵심', '예: 대시보드가 점주 의사결정의 속도(효율성)와 정확도(효과성)를 어떻게 바꾸나'],
+    ['4', 'Ⅳ. 시뮬레이션 및 실증 사례 ★', '실제 기업 사례 1~2개를 「배경 → 한 일 → 결과」로', '예: ○○편의점의 AI 발주 시스템 도입 — 기사 원문 · 날짜 확인'],
+    ['5', 'Ⅴ. 현황 및 문제점', '시장·산업 현황(최신 통계) + 도입을 막는 문제 3~4개', '예: 중소 점포의 데이터 부족 · 점주 교육 · 시스템 비용'],
+    ['6', 'Ⅵ. 기대 효과', '숫자로 말할 수 있는 효과와 숫자로는 안 되는 효과를 나눠서', '예: 폐기율 ○% 감소(정량) · 점주 업무 스트레스 감소(정성)'],
+    ['7', 'Ⅶ. 결론 및 제언', '결론 3문장 이내 + 기업이 실제로 할 수 있는 제언', '예: 소형 점포는 대시보드 지표를 3개로 줄여 시작하라'],
+    ['8', 'Ⅷ. 향후 발전 방향', '앞으로 3~4년 기술·시장이 어떻게 바뀔지 (최신 자료 근거)', '예: 생성형 AI가 대시보드를 말로 설명해 주는 방향'],
+  ];
+  const TDRAFT = {"erp": ["부서마다 따로 쓰던 시스템이 만든 데이터 중복·불일치 문제와, ERP로 하나로 묶으려는 목적", "ERP의 뜻 · 핵심 모듈(재무·생산·공급망·영업·인사) · 클라우드 ERP", "하나의 데이터 원천(모두 같은 숫자를 봄)과 업무 재설계 도구로서의 ERP — 효율성·정보 일관성", "제조 기업의 ERP 도입 사례 — 도입 배경 → 바뀐 업무 → 결과(재고·마감 기간 변화)", "국내 ERP 도입 현황(중소기업 포함)과 실패 원인: 비용, 직원 저항, 기존 업무와의 충돌", "재고 회전·결산 기간 단축(정량) / 부서 간 협업·의사결정 속도 개선(정성)", "ERP는 시스템이 아니라 업무 방식을 바꾸는 일 — 도입 전 업무 정리와 교육을 먼저", "클라우드 ERP 확산, AI가 들어간 ERP(자동 분석·예측)"], "db": ["데이터가 흩어져 같은 고객이 여러 번 등록되는 문제와, 데이터베이스로 정리하려는 목적", "데이터베이스·테이블·기본키·관계의 뜻 · 데이터베이스 관리 시스템(DBMS)", "데이터베이스가 정보시스템 신뢰의 바탕이 되는 이유 — 무결성·부서 간 공유(ERP·SCM·CRM)", "금융 기업의 고객 데이터 통합 사례 — 배경 → 한 일 → 결과", "데이터 품질 문제(중복·오류) 현황과 개인정보 규제 부담", "조회 시간·오류 건수 감소(정량) / 고객 응대 품질 향상(정성)", "데이터 표준과 담당자부터 정하라 — 데이터 품질 관리 제언", "클라우드 데이터베이스, 실시간 데이터 처리, AI용 데이터 관리"], "dx": ["종이·전화 중심 업무의 한계와, 디지털 전환으로 일하는 방식을 바꾸려는 목적", "디지털 전환의 뜻 · 디지털화와의 차이 · 구성 요소(데이터·플랫폼·조직 문화)", "정보시스템의 역할이 업무 지원에서 전략 동반자로 바뀌는 과정", "금융·유통 기업의 디지털 전환 사례 — 배경 → 한 일 → 결과(모바일 전환 등)", "산업별 디지털 전환 현황과 걸림돌: 기존 시스템, 인력, 조직 저항", "처리 시간·비용 절감(정량) / 고객 경험·조직 민첩성 향상(정성)", "기술보다 사람과 업무 방식부터 — 작게 시작해 넓히는 전환 제언", "AI 전환(AX)으로의 확장, 플랫폼 중심 사업 모델"], "sec": ["개인정보 유출·랜섬웨어 사고 증가와, 보안을 비용이 아닌 투자로 보려는 목적", "정보보안의 뜻 · 기밀성·무결성·가용성(C·I·A) · 위협·취약점·위험 · 통제 4종", "사고가 나도 사업을 이어 가는 힘과 위험 관리 도구로서의 정보보안", "헬스케어·유통 기업의 보안 사고 대응 사례 — 사고 → 대응 → 결과(언론 보도 원문 확인)", "국내 보안 사고 현황(최신 통계)과 중소기업의 보안 투자 부족", "사고 대응 시간 단축·피해액 감소(정량) / 고객 신뢰 유지(정성)", "예방만이 아니라 탐지·대응·복구까지 — 위험 처리 4가지 중 선택 제언", "AI를 이용한 공격과 방어, 제로 트러스트(아무도 기본으로 믿지 않는 보안)"], "big": ["쌓이기만 하는 기록 데이터와, 그 안의 패턴으로 결정을 바꾸려는 목적", "빅데이터의 뜻 · 특징(양·속도·다양성) · 수집 → 저장 → 분석 → 활용", "분석 능력이 경쟁력이 되는 이유와 데이터를 누가 어떻게 관리할지(데이터 관리 체계)", "유통·헬스케어 기업의 빅데이터 활용 사례 — 배경 → 한 일 → 결과", "산업별 빅데이터 활용 현황과 문제: 개인정보, 데이터 품질, 분석 인력", "수요 예측 정확도·매출 변화(정량) / 고객 이해 향상(정성)", "데이터를 모으기 전에 \"무엇을 결정할지\"부터 정하라", "AI와 결합한 실시간 분석, 데이터 거래·공유 확대"], "bi": ["데이터는 많은데 경영자가 감으로 결정하는 문제와, BI로 근거 있는 결정을 하려는 목적", "BI의 뜻 · 데이터 웨어하우스 · 대시보드 · KPI(핵심 성과지표)", "전략적 의사결정과 성과 관리(KPI·균형성과표) 도구로서의 BI", "유통·통신 기업의 BI 도입 사례 — 배경 → 한 일 → 결과", "BI 도입 현황과 문제: 지표가 너무 많음, 데이터 신뢰, 활용 능력", "의사결정 시간 단축·재고 감소(정량) / 데이터 기반 조직 문화(정성)", "지표는 적게, 결정과 연결해서 — 지표 3개로 시작하는 제언", "생성형 AI가 대시보드를 말로 설명하는 BI, 셀프 서비스 BI"], "ai": ["반복 업무 부담과 판단 속도 문제, AI·자동화로 일을 나누려는 목적", "AI의 뜻 · 기계학습 · 생성형 AI · RPA(반복 업무 자동화 프로그램)", "AI가 의사결정을 돕는 방식과, 사람이 끝까지 확인해야 할 범위(책임·설명 가능성)", "금융·유통·고객센터의 AI·자동화 도입 사례 — 배경 → 한 일 → 결과", "국내 기업 AI 도입 현황과 문제: 편향·오류·일자리·데이터 부족", "처리 시간·비용 절감(정량) / 직원이 더 가치 있는 일에 집중(정성)", "AI에 맡길 일과 사람이 확인할 일을 나누는 기준을 먼저 세워라", "AI 에이전트(스스로 일을 처리하는 AI), AI 규제(AI 기본법 등)"], "trend": ["새 기술이 빠르게 퍼지는 환경과, 그중 하나가 기업을 어떻게 바꾸는지 보려는 목적", "다룰 기술(사물인터넷·클라우드·위치 기반 서비스 등)의 뜻과 구성 요소", "새 기술이 정보시스템과 업무 흐름을 바꾸는 방식과 그 한계", "물류·제조·플랫폼 기업의 신기술 적용 사례 — 배경 → 한 일 → 결과", "해당 기술의 시장 현황(최신 통계)과 도입 걸림돌: 비용, 표준, 보안", "생산성·비용 변화(정량) / 새로운 서비스·고객 경험(정성)", "유행이 아니라 문제 해결로 — 기술 도입 전 확인할 질문 제언", "이 기술의 3~4년 뒤 모습과 다른 기술과의 결합"], "future": ["정보기술이 일자리·윤리·규제를 빠르게 바꾸는 상황과, 기업이 대비할 점을 찾으려는 목적", "다룰 변화(자동화와 일자리, 데이터 윤리, 디지털 규제)의 뜻과 범위", "정보시스템이 조직·사회에 주는 영향과 경영정보학이 맞닥뜨린 도전", "변화에 대응한 기업·정부 사례 — 배경 → 한 일 → 결과", "일자리 변화·규제 현황(최신 통계·법)과 기업이 겪는 문제", "대응했을 때의 비용·위험 감소(정량) / 신뢰·인재 확보(정성)", "기업과 개인이 지금 준비할 것 — 실행 가능한 제언", "앞으로 3~4년 정보시스템과 일하는 방식의 전망"]};
+  const tocOwn = (k) => { const v = get('toc-' + k).trim(); const d = TDRAFT[get('tp-final')]; return !!v && !(d && v === d[+k - 1]); };
+  TDRAFT.etc = ['이 주제가 왜 지금 중요한가와, 보고서로 밝히려는 것', '이 주제의 핵심 용어와 구성 요소 (이어지는 수업 개념 포함)', '이 주제가 경영정보시스템의 목표(효율성·효과성 등)와 어떻게 이어지나', '실제 기업 사례 1~2개 — 배경 → 한 일 → 결과', '현황(최신 통계)과 문제점 3~4개', '정량적 효과 / 정성적 효과', '결론 3문장 + 기업이 할 수 있는 제언', '앞으로 3~4년 전망'];
+  const TFOCUS = { erp: ['한 시스템에 모인 데이터 · 업무 재설계', '제조업'], db: ['정보시스템을 믿을 수 있게 하는 바탕 · 부서끼리 데이터 공유', '금융업'], dx: ['정보시스템이 "업무 지원"에서 "전략 동반자"로 바뀌는 과정', '금융·유통'], sec: ['사고가 나도 사업을 잇기 · 위험 관리', '헬스케어'], big: ['분석 능력 강화 · 데이터를 누가 어떻게 관리하나', '유통·헬스케어·제조'], bi: ['전략적 의사결정 · 성과지표(KPI) 관리', '유통·금융·통신'], ai: ['사람의 판단을 돕는 AI와 반복 업무 자동화 · 사람이 확인할 범위', '금융·유통·고객센터'], trend: ['새 기술이 정보시스템과 업무를 바꾸는 방식 · 한계', '물류·스마트팩토리·플랫폼'], future: ['일자리·윤리·규제 변화와 기업 정보시스템의 미래', '산업 전반 · 정부 정책'], etc: ['고른 주제와 이어지는 수업 개념, 경영정보시스템의 목표와의 연결', '그 주제를 실제로 쓰는 기업'] };
+  const TCRIT = [['like', '하고 싶다', '이 주제를 한 달 동안 파고들 마음이 있나'], ['src', '실제 기업 사례가 있다', '이 주제로 실제 기업 사례·기사·통계를 찾을 수 있나'], ['can', '끝까지 쓸 수 있다', '수업 개념으로 이해하고 우리 말로 설명할 수 있나']];
+  const topicLab = (t) => t === 'etc' ? ('기타: ' + (get('tp-etcname') || '(주제 이름 미입력)')) : ((TOPICS.find((x) => x[0] === t) || [])[1] || '');
+  const tpMembers = () => { const ids = new Set(); Object.keys(cur || {}).forEach((k) => { const m = k.match(/^tp-(?:nm|r|first)-([^-]+)/); if (m && get(k)) ids.add(m[1]); }); return [...ids]; };
+  const tpName = (id) => get('tp-nm-' + id) || '(이름 미입력)';
+  const tpScore = (id, t, c) => parseInt(get(`tp-r-${id}-${t}-${c}`), 10) || 0;
+  function tpAgg() {
+    const ms = tpMembers();
+    return TOPICS.map(([t, lab]) => {
+      const sums = TCRIT.map(([c]) => ms.reduce((a, id) => a + tpScore(id, t, c), 0));
+      const firsts = ms.filter((id) => get('tp-first-' + id) === t).map(tpName);
+      const lowSrc = ms.filter((id) => tpScore(id, t, 'src') === 1).map(tpName);
+      return { t, lab, sums, total: sums.reduce((a, b) => a + b, 0), firsts, lowSrc };
+    }).sort((a, b) => b.total - a.total || b.firsts.length - a.firsts.length);
+  }
+  function renderTopic(c) {
+    head(c, 7, '기말 프로젝트 주제와 목차 정하기 — 각자 점수 → 팀 집계 → 합의 → 목차');
+    c.append(concept([
+      ['무엇을 정하나', '기말 보고서 주제입니다. 지금까지 만든 우리 팀 비즈니스 모델(서비스)과는 별개로, 아래 9개 중 하나(또는 경영정보 관련 기타 주제)를 골라 실제 기업·산업 사례로 씁니다.'],
+      ['정하는 순서', '① 주제를 읽는다 → ② 각자 혼자 세 가지 기준으로 점수를 매기고 1지망을 고른다 → ③ 팀 집계표를 함께 본다 → ④ 이야기해서 하나로 정하고, 모두 「동의」를 누른다 → ⑤ 8장 목차의 소제목과 담당을 정한다.'],
+      ['왜 이렇게', '목소리 큰 한 사람이 정하면 나머지는 한 달 내내 끌려갑니다. 각자 먼저 적어 두면 조용한 사람의 생각도 표에 남고, "하고 싶은 것"과 "자료가 있는 것"을 함께 볼 수 있습니다.'],
+    ]));
+    // 1. 주제 표
+    const it1 = el('div', 'item'); it1.append(el('div', 'where', '1. 주제 9개 + 기타 — 쉬운 말로'));
+    const tw1 = el('div', 'tw'); const t1 = el('table', 'g'); t1.innerHTML = '<thead><tr><th style="width:22%">주제</th><th style="width:38%">한 줄 뜻</th><th>이 주제로 보고서를 쓰면 다루는 질문</th></tr></thead>';
+    const b1 = el('tbody'); TOPICS.forEach(([, lab, d, q]) => { const tr = el('tr'); tr.append(el('td', null, lab), el('td', null, d), el('td', null, q)); b1.append(tr); }); t1.append(b1); tw1.append(t1); it1.append(tw1); c.append(it1);
+    // 2. 각자 점수
+    const it2 = el('div', 'item'); it2.append(el('div', 'where', '2. 각자 점수 — 내 기기에서 혼자 매깁니다'), el('p', 'lead', '다른 사람 점수를 보기 전에 매깁니다. 1 = 아니다 · 2 = 보통 · 3 = 그렇다. 이름 칸에는 실명을 적습니다(누가 어떤 의견을 냈는지 남깁니다).'));
+    const nr = el('div', 'row'); nr.append(el('span', 'tagc', '내 이름')); const ni = el('input'); ni.type = 'text'; ni.placeholder = '내 실명'; bindText(ni, 'tp-nm-' + ME(), null); nr.append(ni); it2.append(nr);
+    const tw2 = el('div', 'tw'); const t2 = el('table', 'g'); const hd = el('tr'); hd.append(el('th', null, '주제')); TCRIT.forEach(([, l, h]) => { const th = el('th'); th.append(el('div', null, l), el('div', 'clab', h)); hd.append(th); }); hd.append(el('th', null, '1지망')); const th2 = el('thead'); th2.append(hd); t2.append(th2);
+    const b2 = el('tbody');
+    TOPICS.forEach(([t, lab]) => {
+      const tr = el('tr'); tr.append(el('td', null, lab));
+      TCRIT.forEach(([cr]) => { const td = el('td'); td.append(marks(`tp-r-${ME()}-${t}-${cr}`, [['1', '1'], ['2', '2'], ['3', '3']])); tr.append(td); });
+      const td = el('td'); td.append(marks('tp-first-' + ME(), [[t, '1지망']])); tr.append(td); b2.append(tr);
+      if (t === 'etc') { const er = el('tr'); const ec = el('td'); ec.colSpan = 5; const ei = el('input'); ei.type = 'text'; ei.placeholder = '기타에 점수를 줬다면: 내가 제안하는 주제 이름과 이어지는 수업 개념 — 예: 쿠팡의 물류 정보시스템(SCM)'; bindText(ei, 'tp-etc-' + ME(), null); ec.append(ei); er.append(ec); b2.append(er); }
+    });
+    t2.append(b2); tw2.append(t2); it2.append(tw2);
+    it2.append(ta('tp-why-' + ME(), 2, '내 1지망 이유 한 줄 — 예: 아르바이트하던 편의점이 발주를 POS 데이터로 바꾼 걸 봐서 BI 사례를 찾기 쉽다'));
+    const mg = el('p', 'gate'); derived.push(() => { const n = TOPICS.reduce((a, [t]) => a + TCRIT.filter(([cr]) => get(`tp-r-${ME()}-${t}-${cr}`)).length, 0); mg.className = 'gate' + (n === TOPICS.length * 3 && get('tp-first-' + ME()) ? ' ok' : ''); mg.textContent = `내 점수 ${n}/${TOPICS.length * 3}칸 · 1지망 ${get('tp-first-' + ME()) ? '고름' : '아직'}`; }); it2.append(mg);
+    c.append(it2);
+    // 3. 팀 집계
+    const it3 = el('div', 'item'); it3.append(el('div', 'where', '3. 팀 집계 — 모두 매긴 뒤 함께 봅니다'), el('p', 'lead', '총점이 높은 순서입니다. 총점이 1등이어도 「기업 사례」에 1점을 준 사람이 있으면, 그 사람에게 왜 그런지 먼저 묻습니다. 실제 사례가 없으면 보고서를 끝까지 쓰기 어렵습니다.'));
+    const tw3 = el('div', 'tw'); const t3 = el('table', 'g'); const b3 = el('tbody');
+    t3.innerHTML = '<thead><tr><th>주제</th><th>하고 싶다</th><th>기업 사례</th><th>끝까지 쓸 수 있다</th><th>총점</th><th>1지망한 사람</th><th>사례에 1점 준 사람</th></tr></thead>'; t3.append(b3); tw3.append(t3); it3.append(tw3);
+    const who = el('p', 'clab'); it3.append(who); const etcl = el('p', 'clab'); it3.append(etcl); derived.push(() => { const l = tpMembers().filter((id) => get('tp-etc-' + id).trim()).map((id) => tpName(id) + ': ' + get('tp-etc-' + id)); etcl.textContent = l.length ? '기타 제안 — ' + l.join(' / ') : ''; });
+    derived.push(() => { b3.replaceChildren(); const ms = tpMembers(); who.textContent = ms.length ? '참여: ' + ms.map(tpName).join(', ') + ` (${ms.length}명)` : '아직 아무도 점수를 매기지 않았습니다.';
+      tpAgg().forEach((r, i) => { const tr = el('tr'); if (i < 2 && r.total) tr.className = 'minerow'; tr.append(el('td', null, (i < 2 && r.total ? '★ ' : '') + r.lab)); r.sums.forEach((x) => tr.append(el('td', null, String(x)))); tr.append(el('td', null, String(r.total)), el('td', null, r.firsts.join(', ') || '-'), el('td', r.lowSrc.length ? 'warnline' : null, r.lowSrc.join(', ') || '-')); b3.append(tr); }); });
+    c.append(it3);
+    // 4. 팀 결정
+    const it4 = el('div', 'item'); it4.append(el('div', 'where', '4. 팀 결정 — 이야기해서 하나로'), el('p', 'lead', '점수가 답을 정하지 않습니다. 상위 2개(★)를 놓고 "한 달 동안 자료를 찾아 끝까지 쓸 수 있는 쪽"을 고릅니다.'));
+    it4.append(marks('tp-final', TOPICS.map(([t, lab]) => [t, t === 'etc' ? '기타' : lab])));
+    const ew = el('div'); ew.append(writeBlock('tp-etcname', { title: '기타 주제 이름과 이어지는 수업 개념', rows: 2, ph: '예: 쿠팡 로켓배송을 움직이는 물류 정보시스템 — 수업의 SCM(공급망 관리)과 이어짐' })); derived.push(() => { ew.hidden = get('tp-final') !== 'etc'; }); it4.append(ew);
+    it4.append(writeBlock('tp-why', { title: '고른 이유 — 집계표에서 무엇을 보고 정했나', rows: 2, ph: '예: 총점 2위였지만 1지망이 3명이고, 기업 사례에 1점 준 사람이 없어서 끝까지 쓸 수 있다고 봤다' }));
+    it4.append(writeBlock('tp-diff', { title: '다른 의견과 어떻게 정리했나', rows: 2, ph: '예: ○○은 빅데이터를 원했다 → 보고서 Ⅴ장 사례에 빅데이터 활용을 한 절로 넣기로 함' }));
+    it4.append(writeBlock('tp-q', { title: '우리 보고서의 핵심 질문 한 문장', pat: '우리 팀은 [주제]로 [기업·산업]의 [무엇]을 다룬다. 핵심 질문은 「[질문]」이다.', ex: '(예) 우리 팀은 BI로 편의점 업계의 발주 결정을 다룬다. 핵심 질문은 「매장 판매 데이터 대시보드가 점주의 발주 실수를 얼마나 줄였나」이다.', rows: 2 }));
+    const ok = el('div', 'item'); ok.append(el('div', 'where', '5. 동의 — 각자 자기 기기에서 누릅니다'));
+    const ob = el('button', 'mk ok', '이 주제에 동의합니다'); ob.type = 'button'; ob.onclick = () => { put('tp-ok-' + ME(), get('tp-ok-' + ME()) === get('tp-final') && get('tp-final') ? '' : get('tp-final')); refresh(); };
+    const ol = el('p', 'clab'); ok.append(ob, ol);
+    derived.push(() => { const f = get('tp-final'); ob.disabled = !f; ob.setAttribute('aria-pressed', String(!!f && get('tp-ok-' + ME()) === f)); const ms = tpMembers(); const yes = ms.filter((id) => f && get('tp-ok-' + id) === f).map(tpName); ol.textContent = !f ? '팀 결정에서 주제를 먼저 고르세요.' : `동의 ${yes.length}/${ms.length}명${yes.length ? ' — ' + yes.join(', ') : ''}${ms.length && yes.length < ms.length ? ' · 아직 안 누른 사람과 한 번 더 이야기합니다' : ''}`; });
+    it4.append(ok); c.append(it4);
+    // 6. 목차 정하기
+    const it6 = el('div', 'item'); it6.append(el('div', 'where', '6. 목차 정하기 — 8개 장의 소제목과 담당'), el('p', 'lead', '모든 주제가 같은 8장 틀(배경 → 개념 → 분석 → 사례 → 문제 → 효과 → 결론 → 전망)을 씁니다. 장마다 우리 팀 소제목(무엇을 쓸지 한 줄)과 담당자 실명을 적습니다. ★ 두 장(Ⅲ·Ⅳ)이 보고서의 중심이라 먼저 정합니다.'));
+    const fc = el('p', 'pat'); derived.push(() => { const f = TFOCUS[get('tp-final')]; const lab = topicLab(get('tp-final')); fc.textContent = f ? `「${lab}」을 고른 팀 — Ⅲ장은 「${f[0]}」에 초점, Ⅳ장 사례는 ${f[1]} 쪽에서 찾으면 자료가 많습니다.` : '4번에서 주제를 고르면 Ⅲ·Ⅳ장 초점이 여기에 나옵니다.'; }); it6.append(fc);
+    const dr = el('div', 'tools'); const db_ = el('button', 'btn', '목차 초안 넣기'); db_.type = 'button'; const dm = el('span', 'warnline');
+    db_.onclick = () => { const d = TDRAFT[get('tp-final')]; if (!d) { dm.textContent = '4번에서 주제를 먼저 고르세요.'; return; } let n = 0; TOC.forEach(([k], i) => { if (!get('toc-' + k).trim()) { put('toc-' + k, d[i]); n++; } }); applyRemote(); dm.textContent = n ? `빈 칸 ${n}곳에 초안을 넣었습니다. 이미 쓴 칸은 그대로 둡니다. 초안을 그대로 두지 말고 우리 팀 사례·기업 이름으로 고칩니다.` : '모든 칸에 이미 내용이 있어 바꾸지 않았습니다.'; };
+    derived.push(() => { db_.disabled = !TDRAFT[get('tp-final')]; });
+    dr.append(db_, dm); it6.append(el('p', 'lead', '주제를 고르면 「목차 초안 넣기」로 8장 소제목 초안을 받을 수 있습니다. 초안은 출발점입니다 — 장마다 우리 팀이 찾은 기업·산업 이름을 넣어 고칩니다.'), dr);
+    it6.append(writeBlock('tp-case', { title: 'Ⅳ장에 쓸 실제 기업 사례 후보 (1~2개)', rows: 2, ph: '기업명 — 무엇을 했나 — 찾은 기사·자료 (언론사·날짜). 확인 못 했으면 [확인 필요]' }));
+    const tw6 = el('div', 'tw'); const t6 = el('table', 'g'); t6.innerHTML = '<thead><tr><th style="width:20%">장</th><th style="width:26%">이 장에 쓰는 것</th><th>우리 팀 소제목 · 담을 내용 한 줄</th><th style="width:15%">담당 (실명)</th></tr></thead>'; const b6 = el('tbody');
+    TOC.forEach(([n, lab, role, ex]) => { const tr = el('tr'); const td1 = el('td'); td1.append(el('b', null, lab)); const td2 = el('td', 'clab', role); const td3 = el('td'); const t = el('textarea'); t.rows = 3; t.placeholder = ex; derived.push(() => { const d = TDRAFT[get('tp-final')]; t.placeholder = d ? '초안: ' + d[+n - 1] : ex; }); bindText(t, 'toc-' + n, null); td3.append(t); const td4 = el('td'); const o = el('input'); o.type = 'text'; o.placeholder = '담당'; bindText(o, 'toc-o-' + n, null); td4.append(o); tr.append(td1, td2, td3, td4); b6.append(tr); });
+    t6.append(b6); tw6.append(t6); it6.append(tw6);
+    const g6 = el('p', 'gate'); derived.push(() => { const n = TOC.filter(([k]) => get('toc-' + k).trim()).length, o = TOC.filter(([k]) => get('toc-o-' + k).trim()).length; g6.className = 'gate' + (n === 8 && o === 8 ? ' ok' : ''); const raw = TOC.filter(([k]) => get('toc-' + k).trim() && !tocOwn(k)).length; g6.textContent = `소제목 ${n}/8 · 담당 ${o}/8${raw ? ` · 초안 그대로인 칸 ${raw}개 — 우리 팀 내용으로 고칩니다` : ''}${tocOwn('3') && tocOwn('4') ? '' : ' · Ⅲ·Ⅳ장은 초안을 고쳐야 완료됩니다'}`; }); it6.append(g6);
+    c.append(it6);
+    c.append(el('p', 'notice', '오늘(월)은 여기까지입니다. 내일(화) 수업에서는 ⑨ AI 검토 → ⑩ 사고 후 복구와 남는 위험 처리 → 최종 제출을 합니다. 주제·목차를 다 정하지 못했으면 내일 수업 전까지 팀 대화방에서 마무리합니다.'));
+    c.append(stuck(['점수가 비슷하다 → 「기업 사례」 점수와 1지망 수를 봅니다. 그래도 같으면 둘 다 기업 사례를 5분씩 찾아보고, 더 많이 나온 쪽으로.', '한 사람이 강하게 원한다 → 그 사람의 1지망 이유를 듣고, 그 주제의 「기업 사례」 점수가 2 이상인지 확인합니다.', '우리 팀 서비스로 쓰고 싶다 → 기말 보고서는 서비스와 별개입니다. 서비스는 지금까지처럼 따로 이어 가고, 보고서는 실제 기업 사례로 씁니다.']));
+  }
+  function renderS8(c) {
+    head(c, 8, 'AI에게 빈틈을 묻고, 채택 여부는 팀이 근거로 정합니다');
+    c.append(concept([['AI 사용 규칙', 'AI의 제안은 후보일 뿐입니다. 우리 서비스에 실제로 있는 자산·장면인지 확인하고 채택·수정·거절을 팀이 정합니다. 팀원 이름과 개인정보는 AI에 넣지 않습니다.'], ['검증한 증거', '판정마다 근거(우리 서비스 사실 · 교재 · 기사 원문)를 씁니다. 근거로 확인했다면 모두 채택해도 됩니다. AI가 낸 법 조항·사례·수치는 원문을 못 찾으면 쓰지 않습니다.']]));
+    const it = el('div', 'item'); it.append(el('div', 'where', '1. AI에게 보낼 질문 — 우리 팀 내용과 받은 반론이 자동으로 들어갑니다'));
+    const out = el('div', 'out'); derived.push(() => { out.textContent = aiPrompt(); }); it.append(out);
+    const cb = el('button', 'btn primary', '질문 복사'); cb.type = 'button'; const cm = el('span', 'warnline');
+    cb.onclick = () => { const t = aiPrompt(); const fail = () => { const r = document.createRange(); r.selectNodeContents(out); const s = getSelection(); s.removeAllRanges(); s.addRange(r); cm.textContent = '복사가 막혀 글을 선택해 두었습니다. Ctrl+C(⌘+C)로 복사하세요.'; }; try { navigator.clipboard.writeText(t).then(() => { cm.textContent = '복사했습니다.'; }, fail); } catch (e) { fail(); } };
+    const tl = el('div', 'tools'); tl.append(cb, cm); it.append(tl); c.append(it);
+    const it2 = el('div', 'item'); it2.append(el('div', 'where', '2. AI 제안 판정 — 1개는 필수, 2개면 더 좋습니다'));
+    const tw = el('div', 'tw'); const tb = el('table', 'g'); tb.innerHTML = '<thead><tr><th>AI가 제안·지적한 것</th><th style="width:20%">판정</th><th>근거 (우리 서비스에 실제로 있나? 원문 확인?)</th></tr></thead>'; const body = el('tbody');
+    const er = el('tr', 'exr'); er.append(el('td', null, '(예) "개인정보보호법 제XX조에 따라 72시간 내 신고 의무"'), el('td', null, '수정'), el('td', null, '조항 번호를 원문에서 확인하지 못함 → [확인 필요]로 두고, "유출 의심 시 신고 절차 확인"만 대응 통제에 추가')); body.append(er);
+    [['s7-ai', 's7-ai-v', 's7-ai-why'], ['s8-ai2', 's8-ai2-v', 's8-ai2-why']].forEach(([k1, k2, k3]) => { const tr = el('tr'); const t1 = el('td'); t1.append(ta(k1, 3)); const t2 = el('td'); t2.append(marks(k2, [['채택', '채택', 'ok'], ['수정', '수정', 'mid'], ['거절', '거절', 'no']])); const t3 = el('td'); t3.append(ta(k3, 3)); tr.append(t1, t2, t3); body.append(tr); });
+    tb.append(body); tw.append(tb); it2.append(tw);
+    const g = el('p', 'warnline'); derived.push(() => { const v = [get('s7-ai-v'), get('s8-ai2-v')].filter(Boolean); g.textContent = v.length && v.every((x) => x === '채택') ? '모두 "채택"입니다. 우리 서비스에 없는 장면이나 확인 못 한 사실이 정말 없었나요?' : ''; }); it2.append(g);
+    it2.append(checkLabel('s8-apply', '채택·수정한 내용을 ④·⑤ 칸에 실제로 고쳐 넣었다 (이 표만 고치면 안 됩니다)'));
+    c.append(it2);
+    c.append(stuck(['AI 답에 "100% 차단", "완벽한 보안"이 있다 → 거절 후보입니다. 통제는 위험을 낮출 뿐입니다.', 'AI가 우리 서비스에 없는 기능(예: 결제를 안 받는데 카드 정보 유출)을 말한다 → 근거와 함께 거절합니다.']));
+  }
+  function renderS9(c) {
+    head(c, 9, '사고가 나도 업무를 잇는 법과, 남는 위험을 어떻게 다룰지 정하고 제출합니다');
+    c.append(concept([['핵심 개념 1 · 복구', '막기만으로는 끝나지 않습니다. 핵심 업무가 멈춰도 되는 최대 시간을 정하고, 그 안에 되살릴 백업·대체 방법과 사고 때 움직일 사람·순서를 정해 둡니다(업무 연속성 계획).'], ['핵심 개념 2 · 위험 처리', '남는 위험은 네 가지 중 하나로 다룹니다. 감소(통제를 더 둔다) · 전가(보험·위탁 계약으로 피해 부담을 나눈다) · 회피(그 데이터를 아예 받지 않는다) · 수용(알고 받아들이고 지켜본다). 고른 이유가 있어야 계획입니다.'], ['전체 그림', '이 워크시트의 보안 단계 순서가 미국 정부가 쓰는 보안 관리 표준 틀과 같습니다: 자산·위험 파악(③④) → 막기(예방) → 알아채기(탐지) → 대응 → 되살리기(복구, ⑩) — 그리고 이 모두를 누가 책임지나(⑤ 담당 · ⑩ 사고 대응).']]));
+    const cases = el('div', 'grid4');
+    [['국가정보자원관리원 화재 (2025.9)', '전산실 화재로 정부 온라인 서비스가 대거 멈춤 → 가용성 · 이중화 · 대체 장소'], ['예스24 랜섬웨어 (2025.6)', '서비스가 장기간 중단되고 이후 다시 공격받았다는 보도 → 백업 위치 · 복구 연습 · 패치']].forEach(([a, b]) => { const d = el('div', 'case'); d.append(el('b', null, a), el('span', null, b)); cases.append(d); });
+    const ci = el('div', 'item'); ci.append(el('div', 'where', '실제 사고에서 배우기 — 언론 보도 요약입니다. 쓰려면 기사 원문을 찾아 언론사·날짜를 적습니다'), cases); c.append(ci);
+    c.append(writeBlock('s9-mtd', { title: '1. 핵심 업무와 멈춰도 되는 최대 시간', lead: '④의 위험이 터지면 어떤 업무가 멈추나? 몇 시간까지 견딜 수 있나?', pat: '[핵심 업무]가 [몇 시간] 넘게 멈추면 [누가 어떤 피해]를 본다', ex: '(가상 스터디룸 예약 앱) 예약 접수가 3시간 넘게 멈추면 시험 기간 학생들이 방을 못 잡고 앱을 지운다', rows: 2 }));
+    c.append(writeBlock('s9-bk', { title: '2. 백업과 대체 방법 (가용성·무결성이 깨질 때)', pat: '[무엇을] [얼마나 자주] [어디에] 백업하고, 멈추면 [대체 방법]으로 잇는다', ex: '예약 기록을 매일 밤 다른 저장소에 복사, 학기마다 복구 연습 · 서버가 멈추면 카카오톡 채널로 임시 예약 접수', rows: 2, ph: '유출(기밀성) 위험만 다룬 팀은 "해당 적음"이라고 쓰고 이유 한 줄' }));
+    c.append(writeBlock('s9-ir', { title: '3. 사고 때 누가 · 몇 시간 안에 · 무엇을 · 누구에게 알리나', lead: '사람 이름이 아니라 역할로. 협력업체·외주 계정도 빠뜨리지 않습니다.', pat: '[역할]이 [몇 시간] 안에 [조치]하고 [누구]에게 알린다', ex: '운영 담당이 1시간 안에 의심 계정 잠금 → 책임자 보고 → 24시간 안에 피해 학생에게 안내 [신고 기한은 확인 필요]', rows: 2 }));
+    c.append(writeBlock('s9-case', { title: '4. 판단에 참고한 실제 사고 (선택)', rows: 1, ph: '예: 예스24 랜섬웨어 — ○○일보 2025.6.○ (원문 확인함)' }));
+    const it = el('div', 'item'); it.append(el('div', 'where', '5. ⑤의 「남는 위험」을 어떻게 다루나'));
+    const rs = el('p', 'lead'); derived.push(() => { rs.textContent = '⑤에서 쓴 남는 위험: ' + (get('s5-res') || '(아직 안 씀 — ⑤단계 3번)'); }); it.append(rs);
+    it.append(marks('s9-treat', [['감소', '감소 — 통제를 더 둔다'], ['전가', '전가 — 보험·계약으로 나눈다'], ['회피', '회피 — 그 데이터를 받지 않는다'], ['수용', '수용 — 알고 받아들인다']]));
+    it.append(ta('s9-treat-why', 2, '고른 이유 (비용·불편·사업에 미치는 영향) · 수용이면 무엇을 지켜보나'));
+    c.append(it);
+    const it5 = el('div', 'item'); it5.append(el('div', 'where', '6. Ⅶ장 제언 최종본'), el('p', 'lead', '어제 초안에 AI 판정·반론·복구·처리 결정을 반영해 고칩니다. 이 문단이 최종보고서 Ⅶ장에 그대로 들어갑니다.'));
+    const fin = el('textarea'); fin.rows = 5; fin.placeholder = '어제 초안을 불러와 고치세요'; bindText(fin, 's9-final', null);
+    const lb = el('button', 'btn', '어제 초안 불러오기'); lb.type = 'button'; lb.onclick = () => { if (fin.value.trim() && !fin.dataset.arm) { fin.dataset.arm = '1'; lb.textContent = '이미 쓴 내용이 있습니다 — 한 번 더 누르면 바꿉니다'; setTimeout(() => { delete fin.dataset.arm; lb.textContent = '어제 초안 불러오기'; }, 4000); return; } fin.value = get('s7-rec'); put('s9-final', fin.value); refresh(); fin.focus(); };
+    const tl = el('div', 'tools'); tl.append(lb); it5.append(fin, tl); c.append(it5);
+    const it3 = el('div', 'item'); it3.append(el('div', 'where', '7. 제출 전 확인 — 평가에서 보는 것과 같습니다'));
+    [['s7-c1', '지난주 대책 → 위험 → 통제 → 남는 위험 → 처리 결정이 한 줄로 이어진다 (①~⑤ · ⑩)'], ['s7-c2', '가능성·영향 판단에 사실/추론/가정 표시가 있다 (④)'], ['s7-c3', '짝 팀 반론에 반영·보류·반박과 이유를 적었다 (⑥)'], ['s7-c4', 'AI 제안을 그대로 옮기지 않고 판정과 근거를 적었다 (⑨)'], ['s9-c5', '실제 사고를 썼다면 언론사·날짜가 있고, 확인 못 한 것은 [확인 필요]다 (⑩)']].forEach(([k, l]) => it3.append(checkLabel(k, l)));
+    c.append(it3);
+    const it4 = el('div', 'item'); it4.append(el('div', 'where', '8. 최종 PDF 저장 → DOOR 제출'), el('p', 'lead', '표지 · 요약 · 목차 · 장 번호가 있는 문서로 저장됩니다. 팀 대표 1명이 DOOR에 올립니다. 비어 있는 칸은 "(아직 안 씀)"으로 나옵니다.'));
+    const pt = el('div', 'tools'); const pb = el('button', 'btn primary', '최종 PDF로 저장'); pb.type = 'button'; const pm = el('span', 'warnline'); pb.onclick = () => savePDF(pb, pm); pt.append(pb, pm); it4.append(pt); c.append(it4);
+    const qz = el('div', 'item'); qz.append(el('div', 'where', '9. 30초 질문 — 교수님이 팀원 한 명에게 묻습니다. 누구든 답할 수 있게'));
+    const ul = el('ol'); ul.style.margin = '0'; ['우리 1순위 위험을 자산부터 처리 결정까지 한 줄로 말하면?', '그 위험이 깨는 것은 기밀성·무결성·가용성 중 무엇이고, 왜?', 'AI 제안이나 다른 팀 반론 중 무엇을 왜 고치거나 거절했나?'].forEach((q) => ul.append(el('li', null, q))); qz.append(ul); c.append(qz);
+  }
+  const RENDER = [renderS1, renderS2, renderS3, renderS4, renderS5, renderS6, renderS7, renderTopic, renderS8, renderS9];
+
+  // ---------------- 문서(PDF) ----------------
+  function lvTxt(L, I) { const r = riskLevel(get(L), get(I)); return r == null ? (get(L) || get(I) ? `판단 보류 (가능성 ${get(L) || '-'} · 영향 ${get(I) || '-'})` : '') : `${LV[r]} (가능성 ${get(L)} · 영향 ${get(I)})`; }
+  function chapters() {
+    const pick = get('s3-pick'); const cia = get('s4-cia').split(',').filter(Boolean).map((v) => (CIA.find((x) => x[0] === v) || [])[1]).join(', ');
+    const inc = (local || !db) ? (get('s6-manual') ? [['받은 반론', get('s6-manual')], ['판단 · 이유', [get('s6-manual-v'), get('s6-manual-why')].filter(Boolean).join(' — ')]] : [])
+      : incomingKeys().flatMap((f) => [[teamLabel(f) + ' 팀의 반론', get('rt-from-' + f)], ['판단 · 이유', [get(`s6-${f}-v`), get(`s6-${f}-why`)].filter(Boolean).join(' — ')]]);
+    return [
+      { h: '1. 지난번 기술대책 인계', rows: [['지난번 기술대책', hasTech() ? team.tech : get('s1-tech')], ['지키는 자산과 빠진 점', get('s1-review')]] },
+      { h: '2. 개념 확인', rows: [['CIA 사례 판단', QUIZ.map((q, i) => `사례 ${i + 1}: ${get('s2-q' + i) || '-'}${get('s2-q' + i) ? (get('s2-q' + i) === q.a ? ' (정답)' : ' (오답)') : ''}`).join(' · ')], ['위협·위험 구분', get('s2-tr') ? (get('s2-tr') === TR.a ? '정답' : '오답') : ''], ['우리 서비스로 바꿔 쓰기', get('s2-own')]] },
+      { h: '3. 개인별 위험 후보', rows: ideas().map((id) => [candName(id) + (pick === id ? ' ★ 팀 선택' : ''), get(`s3-${id}-r`)]) },
+      { h: '4. 핵심 위험 분석', rows: [['정보자산', get('s4-asset')], ['위협 시나리오', get('s4-threat')], ['깨지는 것 (기밀성·무결성·가용성)', cia], ['위험 수준 (통제 전)', lvTxt('s4-L', 's4-I')], ['판단 근거', [get('s4-ev') && `[${get('s4-ev')}]`, get('s4-basis')].filter(Boolean).join(' ')]] },
+      { h: '5. 통제와 잔여 위험', rows: [['예방', get('s5-prev')], ['탐지', get('s5-det')], ['대응', get('s5-resp')], ['복구', get('s5-rec')], ['위험 수준 (통제 후)', lvTxt('s5-L2', 's5-I2')], ['남는 위험', get('s5-res')], ['실행·점검 담당', get('s5-own')], ['고객·사업 영향', get('s5-biz')]] },
+      { h: '6. 다른 팀 반론과 판단', rows: inc.length ? inc : [['받은 반론', '']] },
+      { h: '7. Ⅶ장 제언 초안 · 역할 (11/9)', rows: [['Ⅶ장 제언 초안', get('s7-rec')], ['역할 · 기여', get('s7-roles')]] },
+      { h: '8. 기말 프로젝트 주제 · 목차 (11/9)', rows: [['결정한 주제', topicLab(get('tp-final'))], ['팀 집계 (총점 순)', tpAgg().map((r) => `${r.lab} ${r.total}점${r.firsts.length ? ' · 1지망 ' + r.firsts.length + '명' : ''}`).join(' / ')], ['고른 이유', get('tp-why')], ['다른 의견과 정리', get('tp-diff')], ['핵심 질문', get('tp-q')], ['Ⅳ장 기업 사례 후보', get('tp-case')], ...TOC.map(([n, lab]) => [lab, [get('toc-' + n), get('toc-o-' + n) && '담당: ' + get('toc-o-' + n)].filter(Boolean).join(' — ')]), ['동의', tpMembers().filter((id) => get('tp-final') && get('tp-ok-' + id) === get('tp-final')).map(tpName).join(', ')], ...tpMembers().map((id) => ['1지망 · ' + tpName(id), [(get('tp-first-' + id) === 'etc' ? '기타' : (topicLab(get('tp-first-' + id)) || '-')), get('tp-etc-' + id) && '기타 제안: ' + get('tp-etc-' + id), get('tp-why-' + id)].filter(Boolean).join(' — ')])] },
+      { h: '9. AI 검토 판정 (11/10)', rows: [['AI 제안 1', get('s7-ai')], ['판정 · 근거', [get('s7-ai-v'), get('s7-ai-why')].filter(Boolean).join(' — ')], ['AI 제안 2', get('s8-ai2')], ['판정 · 근거', [get('s8-ai2-v'), get('s8-ai2-why')].filter(Boolean).join(' — ')], ['표에 반영', get('s8-apply') === '1' ? '반영함' : '']] },
+      { h: '10. 복구 · 남는 위험 처리 · 최종 제언 (11/10)', rows: [['핵심 업무 · 멈춰도 되는 최대 시간', get('s9-mtd')], ['백업 · 대체 방법', get('s9-bk')], ['사고 때 누가 · 몇 시간 안에 · 누구에게 알리나', get('s9-ir')], ['참고한 실제 사고 (언론사 · 날짜)', get('s9-case')], ['남는 위험 처리', [get('s9-treat'), get('s9-treat-why')].filter(Boolean).join(' — ')], ['Ⅶ장 제언 (최종)', get('s9-final')]] },
+    ];
+  }
+  const loadScript = (src) => new Promise((ok, no) => { if (document.querySelector(`script[src="${src}"]`)) return ok(); const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => no(new Error('load')); document.head.append(s); });
+  function reportNode() {
+    const N = '#1b2a4a', G = '#b98a3d', M = '#5d6679', L = '#dde1ea';
+    const n = document.createElement('div');
+    n.style.cssText = 'position:absolute;left:-10000px;top:0;width:760px;background:#ffffff;color:#1d2433;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;font-size:13px;line-height:1.65;';
+    const page = (forced) => { const p = document.createElement('div'); p.style.cssText = 'padding:40px 44px;'; if (forced) p.dataset.page = '1'; n.append(p); return p; };
+    const name = team.label, date = new Date().toLocaleDateString('ko-KR');
+    // 표지
+    const cv = page(false); cv.style.minHeight = '1040px'; cv.style.display = 'flex'; cv.style.flexDirection = 'column'; cv.style.justifyContent = 'center'; cv.style.gap = '14px';
+    cv.innerHTML = `<div style="color:${G};font-size:13px;font-weight:700;letter-spacing:.05em">경영정보학개론 · 정보 보호</div><div style="font-size:30px;font-weight:700;color:${N};line-height:1.35">위험–통제 분석 보고<br><span style="font-size:20px">· 기말 프로젝트 주제와 목차</span></div><div style="border-top:3px solid ${N};width:80px"></div>`;
+    const meta = document.createElement('div'); meta.style.cssText = `font-size:15px;color:#1d2433;line-height:1.9`; meta.textContent = ''; [['팀', name], ['팀원', tpMembers().map(tpName).join(', ') || '(실명 미입력)'], ['서비스', team.topic], ['작성', date + ' (11/9 · 11/10 수업)'], ['구성', '1~7장 위험–통제 분석 (11/9) · 8장 기말 프로젝트 주제·목차 (11/9) · 9~10장 AI 검토·복구 (11/10)']].forEach(([a, b]) => { const r = document.createElement('div'); r.innerHTML = `<span style="display:inline-block;width:70px;vertical-align:top;color:${M};font-size:13px">${a}</span>`; r.append(document.createTextNode(b)); meta.append(r); }); cv.append(meta);
+    // 요약 + 목차
+    const sp = page(true); sp.dataset.page = '1';
+    const r1 = lvTxt('s4-L', 's4-I'), r2 = lvTxt('s5-L2', 's5-I2');
+    const ctrl = [['예방', 's5-prev'], ['탐지', 's5-det'], ['대응', 's5-resp'], ['복구', 's5-rec']].filter(([, k]) => get(k).trim()).map(([l, k]) => `${l}: ${get(k)}`).join(' / ');
+    const sh = (t) => { const d = document.createElement('div'); d.style.cssText = `font-size:17px;font-weight:700;color:${N};margin:0 0 10px;padding-left:10px;border-left:5px solid ${G};`; d.textContent = t; return d; };
+    sp.append(sh('요약'));
+    const st = document.createElement('table'); st.style.cssText = 'width:100%;border-collapse:collapse;margin-bottom:26px;';
+    [['핵심 위험', [get('s4-asset'), get('s4-threat')].filter(Boolean).join(' — ')], ['위험 수준', `${r1 || '-'} → 통제 후 ${r2 || '-'}`], ['핵심 통제', ctrl], ['남는 위험', get('s5-res')], ['Ⅶ장 제언', get('s9-final') || get('s7-rec')], ['기말 프로젝트 주제', [(topicLab(get('tp-final'))), get('tp-q')].filter(Boolean).join(' — ')]].forEach(([a, b]) => { const tr = document.createElement('tr'); tr.className = 'pb'; tr.innerHTML = `<td style="width:22%;vertical-align:top;padding:8px 10px;border:1px solid ${L};background:#f5f6f9;font-weight:600;font-size:12px"></td><td style="vertical-align:top;padding:8px 10px;border:1px solid ${L};white-space:pre-wrap"></td>`; tr.children[0].textContent = a; tr.children[1].textContent = (b && b.trim()) ? b : '(아직 안 씀)'; if (!(b && b.trim())) tr.children[1].style.color = '#a3621b'; st.append(tr); });
+    sp.append(st); sp.append(sh('목차'));
+    const toc = document.createElement('ol'); toc.style.cssText = 'margin:0;padding-left:0;list-style:none;font-size:14px;line-height:2;';
+    chapters().forEach((c) => { const li = document.createElement('li'); li.style.borderBottom = `1px dotted ${L}`; li.textContent = c.h; toc.append(li); }); sp.append(toc);
+    // 본문
+    const bp = page(true);
+    chapters().forEach((s) => {
+      const h = document.createElement('div'); h.className = 'pb'; h.style.cssText = `font-size:15px;font-weight:700;color:${N};margin:20px 0 6px;padding-left:8px;border-left:4px solid ${G};`; h.textContent = s.h; bp.append(h);
+      const tb = document.createElement('table'); tb.style.cssText = 'width:100%;border-collapse:collapse;';
+      s.rows.forEach(([a, b]) => { const tr = document.createElement('tr'); tr.className = 'pb'; const c1 = document.createElement('td'); c1.style.cssText = `width:26%;vertical-align:top;padding:7px 10px;border:1px solid ${L};background:#f5f6f9;font-weight:600;font-size:12px;`; c1.textContent = a; const c2 = document.createElement('td'); c2.style.cssText = `vertical-align:top;padding:7px 10px;border:1px solid ${L};white-space:pre-wrap;`; const v = b && String(b).trim(); c2.textContent = v ? b : '(아직 안 씀)'; if (!v) c2.style.color = '#a3621b'; tr.append(c1, c2); tb.append(tr); });
+      bp.append(tb);
+    });
+    const f = document.createElement('div'); f.className = 'pb'; f.style.cssText = `margin-top:20px;font-size:11px;color:${M};`; f.textContent = '자료로 확인하지 않은 내용은 [가정]·[확인 필요]로 표시했습니다.'; bp.append(f);
+    return n;
+  }
+  async function savePDF(btn, msg) {
+    btn.disabled = true; msg.textContent = 'PDF를 만드는 중…'; let node = null;
+    try {
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+      node = reportNode(); document.body.append(node);
+      const SC = 2; const canvas = await window.html2canvas(node, { scale: SC, backgroundColor: '#ffffff' });
+      const base = node.getBoundingClientRect().top; const pos = (e) => Math.round((e.getBoundingClientRect().top - base) * SC);
+      const breaks = [...node.querySelectorAll('.pb')].map(pos).filter((y) => y > 0);
+      const forced = [...node.querySelectorAll('[data-page]')].map(pos).filter((y) => y > 0);
+      const pdf = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' }); const PW = 595.28, PH = 841.89, Mg = 22, iw = PW - 2 * Mg, ratio = iw / canvas.width, maxH = Math.floor((PH - 2 * Mg - 14) / ratio);
+      let y = 0, first = true, pg = 0;
+      while (y < canvas.height - 4) {
+        let end = Math.min(y + maxH, canvas.height);
+        const fz = forced.filter((b) => b > y + 4 && b < end); if (fz.length) end = fz[0];
+        else if (end < canvas.height) { const cand = breaks.filter((b) => b > y + 200 && b <= end); if (cand.length) end = cand[cand.length - 1]; }
+        const sl = document.createElement('canvas'); sl.width = canvas.width; sl.height = end - y; const cx = sl.getContext('2d'); cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, sl.width, sl.height); cx.drawImage(canvas, 0, y, canvas.width, end - y, 0, 0, canvas.width, end - y);
+        if (!first) pdf.addPage(); first = false; pg++; pdf.addImage(sl.toDataURL('image/jpeg', 0.92), 'JPEG', Mg, Mg, iw, (end - y) * ratio);
+        if (pg > 1) { pdf.setFontSize(9); pdf.setTextColor(120); pdf.text(String(pg - 1), PW / 2, PH - 12, { align: 'center' }); }
+        y = end;
+      }
+      const fname = `MIS_위험통제_${team.label.replace(/[\\/:*?"<>|]/g, '')}_${step >= 7 ? '최종' : '중간'}.pdf`;
+      if (dl) { const r = await dl.save({ filename: fname, data: pdf.output('blob') }); msg.textContent = (r && r.note) || '저장했습니다. DOOR에 올려 주세요.'; }
+      else pdfOut(pdf, fname, msg, '저장했습니다. DOOR에 올려 주세요.');
+    } catch (e) { const code = e && e.code; msg.textContent = code === 'declined' ? '저장을 취소했습니다.' : e && e.message === 'load' ? 'PDF 도구를 불러오지 못했습니다. 인터넷 연결을 확인하고 새로고침해 주세요.' : '저장하지 못했습니다. 다시 시도해 주세요.'; }
+    finally { if (node) node.remove(); btn.disabled = false; }
+  }
+
+  // ---------------- 진행률 · 화면 ----------------
+  const REQ = () => [hasTech() ? null : 's1-tech', 's1-review', 's2-q0', 's2-q1', 's2-q2', 's2-tr', 's2-own', 's3-pick', 's4-asset', 's4-threat', 's4-cia', 's4-L', 's4-I', 's4-basis', 's5-prev', 's5-det', 's5-L2', 's5-I2', 's5-res', 's5-own', 's7-rec', 's7-roles', 'tp-final', 'tp-why', 'tp-q', 'tp-case', 'toc-3', 'toc-4', 's7-ai', 's7-ai-v', 's7-ai-why', 's9-mtd', 's9-ir', 's9-treat', 's9-treat-why', 's9-final'].filter(Boolean);
+  function progress() {
+    if (!team) return; const req = REQ(); const done = req.filter((k) => get(k).trim()).length; const pct = Math.round(done / req.length * 100);
+    $('barfill').style.width = pct + '%'; $('barlab').textContent = `${team.label} · 진행률 ${pct}% (${done}/${req.length}칸)`;
+    document.querySelectorAll('#steps .dot').forEach((d, i) => d.classList.toggle('done', !!DONE[i]()));
+  }
+  function renderSteps() {
+    const n = $('steps'); n.replaceChildren();
+    STEPS.forEach((s, i) => { const b = el('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', String(i === step)); b.append(el('span', 'dot' + (DONE[i]() ? ' done' : '')), el('span', 'tm' + (s.day === 'tue' ? ' tue' : ''), s.day === 'tue' ? '화' : '월'), document.createTextNode(s.name)); b.onclick = () => { step = i; renderSteps(); renderStage(); }; n.append(b); });
+  }
+  function renderStage() {
+    bound = []; derived = []; const c = $('stage'); c.replaceChildren(); RENDER[step](c);
+    const g = el('p', 'gate'); derived.push(() => { const d = DONE[step](); g.className = 'gate' + (d ? ' ok' : ''); g.textContent = d ? '이 단계 완료.' : '아직 비어 있는 칸이 있습니다.'; });
+    const nav = el('div', 'tools'); nav.style.marginTop = '18px'; nav.append(g);
+    if (step < STEPS.length - 1) { const b = el('button', 'btn primary', '다음 단계 →'); b.type = 'button'; b.onclick = () => { step++; renderSteps(); renderStage(); const h = document.querySelector('header.top'); window.scrollTo({ top: Math.max(0, $('steps').getBoundingClientRect().top + window.scrollY - (h ? h.offsetHeight : 0) - 8) }); }; nav.append(b); }
+    c.append(nav); refresh();
+  }
+  function watchPartner() {
+    if (partnerUnsub) { try { partnerUnsub(); } catch (e) {} partnerUnsub = null; }
+    Object.keys(partnerVals).forEach((k) => delete partnerVals[k]);
+    const pk = get('s6-partner'); if (!pk || !db || local) return;
+    partnerUnsub = db.collection(`mis8/${pk}/f`).onSnapshot((snap) => { Object.keys(partnerVals).forEach((k) => delete partnerVals[k]); (snap.docs || snap).forEach((d) => { const x = d.data ? d.data() : d; partnerVals[d.id] = { v: x.v || '' }; }); if (step === 5) refresh(); }, () => {});
+  }
+  function loadLocal(tk) { Object.keys(vals).forEach((k) => delete vals[k]); try { Object.keys(localStorage).filter((k) => k.startsWith(`mis8-${tk}-`)).forEach((k) => { vals[k.slice(`mis8-${tk}-`.length)] = { v: localStorage.getItem(k) || '', by: '', at: 0 }; }); } catch (e) {} }
+  function pickTeam(t) {
+    team = t; step = 0; Object.keys(vals).forEach((k) => delete vals[k]); if (!local && db) applyOutbox(t.key);
+    document.querySelectorAll('#teams button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.key === t.key)));
+    try { localStorage.setItem('mis8-team', t.key); } catch (e) {}
+    ['teamcard', 'steps', 'stage'].forEach((id) => { $(id).hidden = false; }); $('emptymsg').hidden = true; $('localcard').hidden = !(local || !db);
+    $('tname').textContent = t.label; $('ttopic').textContent = t.topic; setTimeout(renderDoor, 0);
+    $('ttechlab').textContent = t.tech ? '지난번 기술대책 — 출처: ' + t.techSrc : '지난번 기술대책';
+    const tt = $('ttech'); tt.textContent = t.tech || '지난번 워크시트와 팀 슬라이드에서 기술대책 문장을 찾지 못했습니다. ①단계에서 먼저 1~2문장으로 씁니다.'; tt.className = 'tx' + (t.tech ? '' : ' none');
+    $('tprompt').textContent = '오늘 먼저 생각할 질문 · ' + t.prompt;
+    if (unsub) { try { unsub(); } catch (e) {} unsub = null; }
+    if (local || !db) loadLocal(t.key);
+    renderSteps(); renderStage();
+    if (db && !local) {
+      setSync('불러오는 중…'); const timer = setTimeout(() => setSync('응답이 늦습니다 — 입력은 계속 저장을 시도합니다'), 10000);
+      unsub = db.collection(`mis8/${t.key}/f`).onSnapshot((snap) => {
+        clearTimeout(timer); const seen = new Set();
+        if (!team || team.key !== t.key) return; (snap.docs || snap).forEach((d) => { const x = d.data ? d.data() : d; seen.add(d.id); if (unsent.has(t.key + '/' + d.id)) return; vals[d.id] = { v: x.v || '', by: x.by || '', at: x.at || 0 }; });
+        Object.keys(vals).forEach((k) => { if (!seen.has(k) && !unsent.has(t.key + '/' + k)) delete vals[k]; });
+        setSync('팀 공유 중'); watchPartnerIfChanged(); applyRemote(); renderStepsDots(); renderDoor();
+      }, () => { clearTimeout(timer); setSync('불러오지 못했습니다 — 새로고침해 보세요'); });
+    }
+  }
+  let lastPartner = null;
+  function watchPartnerIfChanged() { if (get('s6-partner') !== lastPartner) { lastPartner = get('s6-partner'); watchPartner(); } }
+  function renderStepsDots() { document.querySelectorAll('#steps .dot').forEach((d, i) => d.classList.toggle('done', !!DONE[i]())); }
+
+  // 작업파일 (팀 공유가 안 될 때)
+  $('jsonout').onclick = async () => {
+    if (!team) { $('jsonmsg').textContent = '팀을 먼저 고르세요.'; return; }
+    const data = {}; Object.keys(vals).forEach((k) => { data[k] = get(k); });
+    const blob = new Blob([JSON.stringify({ kind: 'mis8-risk', team: team.key, savedAt: new Date().toISOString(), data }, null, 2)], { type: 'application/json' });
+    const fname = `MIS_위험통제_작업파일_${team.label.replace(/[\\/:*?"<>|]/g, '')}.json`;
+    try { if (dl) { await dl.save({ filename: fname, data: blob }); } else { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fname; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1500); } $('jsonmsg').textContent = '작업파일을 저장했습니다.'; }
+    catch (e) { $('jsonmsg').textContent = '저장하지 못했습니다.'; }
+  };
+  $('jsonin').onclick = () => $('jsonfile').click();
+  $('jsonfile').addEventListener('change', async (e) => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    try { const j = JSON.parse(await f.text()); const t = TEAMS.find((x) => x.key === j.team); if (j.kind !== 'mis8-risk' || !t || !j.data) throw new Error('fmt');
+      Object.entries(j.data).forEach(([k, v]) => { try { localStorage.setItem(lsKey(t.key, k), String(v)); } catch (er) {} });
+      pickTeam(t); $('jsonmsg').textContent = t.label + ' 작업파일을 불러왔습니다.'; }
+    catch (er) { $('jsonmsg').textContent = '이 워크시트의 작업파일이 아닙니다.'; }
+  });
+
+  // 교수자·전체 현황
+  const OV = {};
+  function renderOV() {
+    const tb = $('ovtable'); tb.replaceChildren(); const hd = el('tr'); ['팀', '진행률', ...STEPS.map((s) => s.name.split(' ')[0]), '마지막 입력'].forEach((h) => hd.append(el('th', null, h))); const th = el('thead'); th.append(hd); tb.append(th);
+    const body = el('tbody');
+    TEAMS.forEach((t) => {
+      const st = team, sc = cur; team = t; cur = OV[t.key] || {}; const doorTxt = get('nmem');
+      try {
+        const req = REQ(); const pct = Math.round(req.filter((k) => get(k).trim()).length / req.length * 100); const last = Math.max(0, ...Object.values(cur).map((x) => x.at || 0));
+        const tr = el('tr'); const tdn = el('td', null, t.label); if (doorTxt) tdn.append(el('div', 'clab', doorTxt)); tr.append(tdn); tr.append(el('td', 'n', pct + '%'));
+        DONE.forEach((f) => { const d = !!f(); tr.append(el('td', 'n ' + (d ? 'ok' : 'no'), d ? '완료' : '—')); });
+        const m = last ? Math.round((Date.now() - last) / 60000) : null; tr.append(el('td', 'n', m == null ? '입력 없음' : m < 1 ? '방금' : m < 60 ? m + '분 전' : Math.round(m / 60) + '시간 전')); body.append(tr);
+      } finally { team = st; cur = sc; }
+    });
+    tb.append(body);
+  }
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('a.ovlink'); if (!a) return; e.preventDefault();
+    const card = $('ovcard'); card.hidden = false;
+    if (db && !local) startOV(); else { const t = $('ovtable'); t.replaceChildren(); const cap = el('caption', 'clab', '팀 공유가 연결되면 여기에 모든 팀의 진행 상태가 보입니다. 잠시 뒤 새로고침해 보세요.'); cap.style.textAlign = 'left'; t.append(cap); }
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  let ovOn = false;
+  function armOV() {
+    $('ovcard').hidden = false; const t = $('ovtable'); t.replaceChildren();
+    const b = el('button', 'btn', '전체 팀 현황 불러오기'); b.type = 'button'; b.onclick = () => startOV(); const cap = el('caption'); cap.style.textAlign = 'left'; cap.append(b); t.append(cap);
+  }
+  function startOV() {
+    if (ovOn) return; ovOn = true;
+    $('ovcard').hidden = false; renderOV();
+    TEAMS.forEach((t) => { db.collection(`mis8/${t.key}/f`).onSnapshot((snap) => { const m = {}; (snap.docs || snap).forEach((d) => { const x = d.data ? d.data() : d; m[d.id] = { v: x.v || '', by: x.by || '', at: x.at || 0 }; }); OV[t.key] = m; renderOV(); }, () => {}, 60000); });
+    setInterval(renderOV, 60000);
+  }
+
+  $('primerCat').append(ctrlTable());
+  TEAMS.forEach((t) => { const b = el('button'); b.type = 'button'; b.dataset.key = t.key; b.setAttribute('aria-pressed', 'false'); b.append(el('b', null, t.label), el('small', null, t.topic), el('small', null, t.tech ? '지난번 기술대책 있음' : '지난번 기술대책 먼저 쓰기')); b.onclick = () => pickTeam(t); $('teams').append(b); });
+  (async () => {
+    try {
+      const c = window.claude; const [d, u, dw] = c && c.use ? await Promise.all([c.use('db'), c.use('user'), c.use('downloads')]) : [null, null, null];
+      db = d; dl = dw; if (u && u.id) { try { me = await u.id(); } catch (e) {} }
+      if (!db && !c) { db = sheetDB('mis9:'); me = me || localId(); setSync('팀 공유 준비됨'); setTimeout(flushOutbox, 1500); try { /[?&#]prof/.test(location.href) ? startOV() : armOV(); } catch (e) {} }
+      else if (!db) { local = true; setSync('팀 공유가 안 되는 화면 — 이 기기에만 저장'); }
+      else { setSync('팀 공유 준비됨'); setTimeout(flushOutbox, 1500); try { /[?&#]prof/.test(location.href) ? startOV() : armOV(); } catch (e) {} }
+    } catch (e) { local = true; setSync('팀 공유가 안 되는 화면 — 이 기기에만 저장'); }
+    let saved = null; try { saved = localStorage.getItem('mis8-team'); } catch (e) {}
+    const t = TEAMS.find((x) => x.key === saved); if (t) pickTeam(t);
+  })();
+})();
+</script>
+
+</body></html>
